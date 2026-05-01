@@ -1,0 +1,130 @@
+import type { ReactNode } from 'react';
+
+export const browserVersions = [
+  {
+    os: 'Windows',
+    version: 'Windows 10 Pro',
+    chrome: '96.0.4664.45',
+    firefox: '94.0.2',
+    edge: '96.0.1054.41',
+    safari: 'not tested'
+  },
+  {
+    os: 'MacOS',
+    version: 'Big Sur 11.5.294.0.1',
+    chrome: '96.0.4664.55',
+    firefox: '94.0.1',
+    edge: 'not tested',
+    safari: '14.1.2'
+  },
+  {
+    os: 'Linux',
+    version: 'not tested',
+    chrome: 'not tested',
+    firefox: 'not tested',
+    edge: 'not tested',
+    safari: 'not tested'
+  }
+];
+
+export type ReleaseInfo = {
+  date: string;
+  title: string;
+  version: string;
+  description: Array<{ heading?: string; items: ReactNode[]; subitems?: string[] }>;
+};
+
+export const releases: ReleaseInfo[] = [
+  {
+    date: 'March 10, 2026',
+    title: 'TopMed Freeze 8 release',
+    version: '2.0-beta.1',
+    description: [{ heading: 'New Data Release', items: ['TopMed is a larger and more diverse dataset and also includes more annotation attributes.'] }]
+  },
+  {
+    date: 'November 10, 2025',
+    title: 'New API release',
+    version: '1.3',
+    description: [{
+      heading: 'Software Updates',
+      items: [
+        'A new API has been released for the AnnoQ website. Refer to AnnoQ Services for detailed information.',
+        'Two libraries AnnoQR and annoq-py that utilize the API have also been released. Tutorials for the R package and python package are also available.',
+        'The backend of the API has also been updated to optimize performance and the client UI has also been updated to use the new API.'
+      ]
+    }]
+  },
+  {
+    date: 'July 9, 2025',
+    title: 'Data update',
+    version: '1.2',
+    description: [{
+      heading: 'Data Updates',
+      items: [
+        'Gene Ontology annotations from GO database released 2025-03-16, DOI: 10.5281/zenodo.15066566',
+        'PANTHER GO slim annotations from version 19.0, based on GO release 2024-01-17, released 2024-06-20',
+        'PANTHER Protein Class and PANTHER pathways annotations from version 19.0, released 2024-06-20',
+        'Reactome annotations based on Reactome database version 86, released 2023-09-07',
+        'PEREGRINE Functional Annotations have been mapped to human genes in PANTHER version 19.0, released 2024-06-20',
+        'Please refer to Data Source and Annotation Tool Version Summary for more details.'
+      ]
+    }]
+  },
+  {
+    date: 'August 12, 2024',
+    title: 'Versioning information',
+    version: '1.11',
+    description: [{
+      items: ['This release of AnnoQ added version information about annotation packages that are used for building WGSA and also version information about other external annotations that have been integrated into the system.']
+    }]
+  },
+  {
+    date: 'July 5, 2024',
+    title: 'Data and Software updates',
+    version: '1.1',
+    description: [
+      {
+        items: ['This release of AnnoQ includes annotations based on Gene Ontology annotations from GO database released 2024-01-17, DOI: 10.5281/zenodo.10536401 and PANTHER GO slim annotations (version 18.0, based on GO release 2023-07-25, released 2023-08-01). A new annotation data type-PANTHER Protein Class (version 18.0, released 2023-08-01) has also been added. These have resulted in the addition of the following annotation types:'],
+        subitems: [
+          'ANNOVAR ensembl PANTHER Protein Class',
+          'ANNOVAR refseq PANTHER Protein Class',
+          'VEP ensembl PANTHER Protein Class',
+          'VEP refseq PANTHER Protein Class',
+          'SnpEff ensembl PANTHER Protein Class',
+          'SnpEff refseq PANTHER Protein Class',
+          'Flanking region 0 PANTHER Protein Class',
+          'Flanking region 10000 PANTHER Protein Class',
+          'Flanking region 20000 PANTHER Protein Class',
+          'PEREGRINE enhancer linked PANTHER protein class'
+        ]
+      },
+      { items: ['A new annotation column PEREGRINE enhancer linked PANTHER pathways has also been added.'] },
+      {
+        heading: 'Bug Fixes',
+        items: [
+          'Incorrect allele frequency data issue has been resolved',
+          'Chromosome X data is now accessible',
+          'Display issue where annotation data was not displayed in the SNP table for some columns has been resolved',
+          'Parsing of enhancer_linked_genes data in detailed view has been resolved',
+          'URL links for Gene Ontology terms, PANTHER Protein class terms, PANTHER pathways, PANTHER genes and Reactome have been fixed'
+        ]
+      }
+    ]
+  },
+  {
+    date: '',
+    title: 'Software Update',
+    version: '1.0',
+    description: [
+      { heading: 'Added', items: ['ElasticSearch Backend', 'AnnoQR (R Package)', 'AnnoQ API', 'Thorough Documentation', 'Row Summary'] },
+      { heading: 'Changed', items: ['Details on Tree View', 'Faster Table View and supports many columns and rows on web'] },
+      { heading: 'Removed', items: ['Retired SQL'] }
+    ]
+  },
+  {
+    date: '',
+    title: 'Initial Release',
+    version: '0.1',
+    description: [{ heading: 'Added', items: ['A basic table viewer', 'Tree view for annotation and categories', 'SQL Backend', 'Keyword Search'] }]
+  }
+];

@@ -1,0 +1,105 @@
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Paper,
+  Stack,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Tabs,
+  Typography
+} from '@mui/material';
+import { useMemo, useRef, useState } from 'react';
+import type { Annotation } from '../types';
+import { AnnotationDetailDialog } from '../features/annotations/AnnotationDetailDialog';
+import { AnnotationTree } from '../features/annotations/AnnotationTree';
+import { useAnnotationSelection } from '../features/annotations/AnnotationSelectionProvider';
+import { useAnnotations } from '../features/annotations/useAnnotations';
+import { downloadText, parseConfig } from '../lib/files';
+
+export function SupportedAnnotationsPage() {
+  const annotations = useAnnotations();
+  const { selected, setSelected } = useAnnotationSelection();
+  const [active, setActive] = useState<Annotation | undefined>();
+  const [error, setError] = useState('');
+  const [tab, setTab] = useState('annotations');
+  const input = useRef<HTMLInputElement>(null);
+  const store = annotations.data;
+
+  const totalLeafCount = useMemo(() => store?.annotations.filter((annotation) => annotation.leaf).length ?? 0, [store]);
+  const versionRows = useMemo(
+    () => store?.annotations.filter((annotation) => annotation.version && annotation.name) ?? [],
+    [store]
+  );
+
+  async function uploadConfig(file?: File) {
+    try {
+      setError('');
+      if (!file || !store) return;
+      const source = parseConfig(await file.text()).filter((name) => store.byName[name]?.leaf);
+      setSelected(source);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Invalid config file');
+    }
+  }
+
+  return (
+    <Container className="simple-page">
+      <Typography variant="h3" gutterBottom>Supported Annotations</Typography>
+      <Typography component="p" sx={{ mb: 2 }}>{totalLeafCount} leaf annotation fields are available from the backend annotation tree.</Typography>
+      {annotations.isLoading && <CircularProgress />}
+      {annotations.error && <Alert severity="error">Unable to load annotation metadata.</Alert>}
+      {error && <Alert severity="warning">{error}</Alert>}
+      {store && (
+        <Paper className="supported-shell">
+          <Tabs value={tab} onChange={(_, value) => setTab(value)} className="supported-tabs">
+            <Tab value="annotations" label="Annotations" />
+            <Tab value="versions" label="Data Versions" />
+          </Tabs>
+          {tab === 'annotations' ? (
+          <>
+          <Stack direction="row" spacing={1} className="drawer-header">
+            <Button variant="outlined" onClick={() => setSelected([])}>Clear Selection</Button>
+            <Button variant="outlined" onClick={() => input.current?.click()}>Upload Config</Button>
+            <input ref={input} hidden type="file" onChange={(event) => void uploadConfig(event.target.files?.[0])} />
+            <Button variant="contained" onClick={() => downloadText('config.txt', JSON.stringify({ _source: selected }))}>Export Config</Button>
+          </Stack>
+          <Box className="supported-tree">
+            <AnnotationTree store={store} selected={selected} onSelectedChange={setSelected} onInfo={setActive} showDescriptions />
+          </Box>
+          </>
+          ) : (
+            <Box className="supported-version-table">
+              <Typography variant="subtitle2" sx={{ p: 1 }}>
+                Built using WGSA version 095
+              </Typography>
+              <Table className="annoq-table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>SNP Detail/Annotation Tool</TableCell>
+                    <TableCell>Version</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {versionRows.map((annotation) => (
+                    <TableRow key={annotation.name}>
+                      <TableCell>{annotation.label || annotation.name}</TableCell>
+                      <TableCell>{annotation.version}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
+          )}
+        </Paper>
+      )}
+      <AnnotationDetailDialog annotation={active} onClose={() => setActive(undefined)} />
+    </Container>
+  );
+}
