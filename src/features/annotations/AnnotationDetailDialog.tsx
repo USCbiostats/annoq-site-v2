@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogTitle, Link, Stack, Typography } from '@mui/material';
+import { Dialog, DialogContent, DialogTitle, Link, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
 import type { Annotation } from '../../types';
 
 export function AnnotationDetailDialog({
@@ -8,26 +8,44 @@ export function AnnotationDetailDialog({
   annotation?: Annotation;
   onClose: () => void;
 }) {
+  const rows = annotation ? [
+    ['Name', annotation.label || annotation.name],
+    ['Description', annotation.detail || 'No description available.'],
+    ['Field', annotation.name],
+    ['API field', annotation.api_field || annotation.name],
+    ['Type', annotation.field_type || annotation.value_type || ''],
+    ['Version', annotation.version || ''],
+    ['PMID', annotation.pmid || ''],
+    ['Source', annotation.link || '']
+  ].filter(([, value]) => Boolean(value)) : [];
+
   return (
     <Dialog open={Boolean(annotation)} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{annotation?.label || annotation?.name}</DialogTitle>
+      <DialogTitle>
+        <Typography variant="h6">{annotation?.label || annotation?.name}</Typography>
+        {annotation?.name && annotation.name !== annotation.label && (
+          <Typography variant="caption" color="text.secondary">{annotation.name}</Typography>
+        )}
+      </DialogTitle>
       <DialogContent>
-        <Stack spacing={1.25}>
-          <Typography variant="body2">{annotation?.detail || 'No description available.'}</Typography>
-          {annotation?.name && <Typography variant="caption">Field: {annotation.name}</Typography>}
-          {annotation?.api_field && <Typography variant="caption">API field: {annotation.api_field}</Typography>}
-          {annotation?.version && <Typography variant="caption">Version: {annotation.version}</Typography>}
-          {annotation?.pmid && (
-            <Typography variant="caption">
-              PMID: <Link href={`https://www.ncbi.nlm.nih.gov/pubmed/${annotation.pmid}`} target="_blank">{annotation.pmid}</Link>
-            </Typography>
-          )}
-          {annotation?.link && (
-            <Link href={annotation.link} target="_blank" rel="noreferrer">
-              Source
-            </Link>
-          )}
-        </Stack>
+        <Table size="small" className="annotation-detail-table">
+          <TableBody>
+            {rows.map(([label, value]) => (
+              <TableRow key={label}>
+                <TableCell component="th">{label}</TableCell>
+                <TableCell>
+                  {label === 'PMID' ? (
+                    <Link href={`https://www.ncbi.nlm.nih.gov/pubmed/${value}`} target="_blank" rel="noreferrer">{value}</Link>
+                  ) : label === 'Source' ? (
+                    <Link href={value} target="_blank" rel="noreferrer">{value}</Link>
+                  ) : (
+                    value
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </DialogContent>
     </Dialog>
   );

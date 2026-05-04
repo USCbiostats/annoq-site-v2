@@ -1,11 +1,13 @@
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Alert,
   Box,
   Button,
   Divider,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -31,7 +33,15 @@ const modes: Array<{ value: QueryMode; label: string }> = [
   { value: 'rsIDList', label: 'rsID List' }
 ];
 
-export function QueryDrawer({ store, onSubmitted }: { store: AnnotationStore; onSubmitted: () => void }) {
+export function QueryDrawer({
+  store,
+  onSubmitted,
+  onClose
+}: {
+  store: AnnotationStore;
+  onSubmitted: () => void;
+  onClose: () => void;
+}) {
   const { state, dispatch } = useSearchState();
   const annotationSelection = useAnnotationSelection();
   const [mode, setMode] = useState(state.mode);
@@ -83,13 +93,23 @@ export function QueryDrawer({ store, onSubmitted }: { store: AnnotationStore; on
 
   return (
     <Box className="drawer-body">
-      <Stack className="drawer-header" direction="row" sx={{ alignItems: 'center' }}>
+      <Stack className="drawer-header query-drawer-title" direction="row" sx={{ alignItems: 'center' }}>
         <Box>
           <Typography variant="subtitle2">Input Query</Typography>
-          <Typography variant="caption" className="muted">
-            Selected: {modes.find((item) => item.value === mode)?.label} · GRCh37/hg19
-          </Typography>
+          <Typography variant="caption" className="muted">Selected: {modes.find((item) => item.value === mode)?.label}</Typography>
         </Box>
+        <Box sx={{ flex: 1 }} />
+        <IconButton size="small" onClick={onClose} aria-label="Close query form">
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      </Stack>
+
+      <Box className="query-provider-note">
+        <Typography variant="caption">Variants Annotation Query Provided by IMAGE Project</Typography>
+      </Box>
+
+      <Stack className="query-type-row" direction="row" sx={{ alignItems: 'center' }}>
+        <Typography variant="subtitle2">Query Type</Typography>
         <Box sx={{ flex: 1 }} />
         <FormControl size="small" sx={{ minWidth: 150 }}>
           <InputLabel>Query Type</InputLabel>
@@ -105,7 +125,7 @@ export function QueryDrawer({ store, onSubmitted }: { store: AnnotationStore; on
         </FormControl>
       </Stack>
 
-      <Stack spacing={1.25} sx={{ p: 1 }}>
+      <Stack spacing={1.5} className="query-form-section">
         {mode === 'chromosome' && (
           <>
             <TextField size="small" label="Chromosome" value={values.chrom} onChange={(e) => setValues((previous) => ({ ...previous, chrom: e.target.value }))} />
@@ -167,6 +187,7 @@ export function QueryDrawer({ store, onSubmitted }: { store: AnnotationStore; on
           selected={annotationSelection.selected}
           onSelectedChange={setSelectedAnnotations}
           onInfo={setActiveAnnotation}
+          showRootNode
         />
       </Box>
       {configError && <Alert severity="warning" sx={{ m: 1 }}>{configError}</Alert>}

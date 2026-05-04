@@ -1,6 +1,5 @@
-import CodeIcon from '@mui/icons-material/Code';
 import ArticleIcon from '@mui/icons-material/Article';
-import SearchIcon from '@mui/icons-material/Search';
+import CodeIcon from '@mui/icons-material/Code';
 import { Box, Button, Container, Grid, Link, Paper, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { browserVersions, releases } from '../data/staticContent';
@@ -228,7 +227,7 @@ export function NewsPage() {
               {release.description.map((section, sectionIndex) => (
                 <Box key={sectionIndex} sx={{ mb: 1 }}>
                   {section.heading && <Typography variant="subtitle2">{section.heading}</Typography>}
-                  <ul>{section.items.map((item, itemIndex) => <li key={itemIndex}>{item}</li>)}</ul>
+                  <ul>{section.items.map((item, itemIndex) => <li key={itemIndex} dangerouslySetInnerHTML={{ __html: item }} />)}</ul>
                   {section.subitems && <ul className="subitems">{section.subitems.map((item) => <li key={item}>{item}</li>)}</ul>}
                 </Box>
               ))}
@@ -241,14 +240,66 @@ export function NewsPage() {
 }
 
 export function ContactPage() {
-  return <SimplePage title="Contact">
-    <Typography>For questions about AnnoQ, contact the project maintainers through the IMAGE project channels.</Typography>
+  return <SimplePage title="Contact Us">
+    <Typography align="center">
+      For comments and feedback about the AnnoQ, please send email to
+    </Typography>
+    <Typography variant="h5" align="center">
+      <Link href="mailto:annoqfeedback@gmail.com" target="_blank">Email US: annoqfeedback@gmail.com</Link>
+    </Typography>
   </SimplePage>;
 }
 
 export function CookiePolicyPage() {
-  return <SimplePage title="Cookie Policy">
-    <Typography>AnnoQ may use standard analytics cookies to understand site usage and improve the service.</Typography>
+  return <SimplePage title="Cookie Policy for AnnoQ Site">
+    <Typography>This is the Cookie Policy for AnnoQ Site</Typography>
+    <Typography variant="h6">What Are Cookies</Typography>
+    <Typography>
+      As is common practice with almost all professional websites this site uses cookies, which are tiny files that are
+      downloaded to your computer, to improve your experience. This page describes what information they gather, how we use
+      it and why we sometimes need to store these cookies. We will also share how you can prevent these cookies from being
+      stored however this may downgrade or &apos;break&apos; certain elements of the sites functionality.
+    </Typography>
+    <Typography variant="h6">How We Use Cookies</Typography>
+    <Typography>
+      We use cookies for a variety of reasons detailed below. Unfortunately in most cases there are no industry standard
+      options for disabling cookies without completely disabling the functionality and features they add to this site.
+    </Typography>
+    <Typography variant="h6">Disabling Cookies</Typography>
+    <Typography>
+      You can prevent the setting of cookies by adjusting the settings on your browser. Be aware that disabling cookies
+      will affect the functionality of this and many other websites that you visit.
+    </Typography>
+    <Typography variant="h6">The Cookies We Set</Typography>
+    <ul>
+      <li>
+        <Typography>Site preferences cookies</Typography>
+        <Typography>
+          In order to provide you with a great experience on this site we provide the functionality to set your preferences
+          for how this site runs when you use it.
+        </Typography>
+      </li>
+    </ul>
+    <Typography variant="h6">Third Party Cookies</Typography>
+    <ul>
+      <li>
+        <Typography>
+          This site uses Google Analytics which is one of the most widespread and trusted analytics solution on the web for
+          helping us to understand how you use the site and ways that we can improve your experience. These cookies may
+          track things such as how long you spend on the site and the pages that you visit so we can continue to produce
+          engaging content.
+        </Typography>
+        <Typography>For more information on Google Analytics cookies, see the official Google Analytics page.</Typography>
+      </li>
+    </ul>
+    <Typography variant="h6">More Information</Typography>
+    <Typography>
+      Hopefully that has clarified things for you. However if you are still looking for more information then you can
+      contact us through one of our preferred contact methods:
+    </Typography>
+    <ul>
+      <li>Email: <Link href="mailto:annoqfeedback@gmail.com" target="_blank">Email US: annoqfeedback@gmail.com</Link></li>
+    </ul>
   </SimplePage>;
 }
 

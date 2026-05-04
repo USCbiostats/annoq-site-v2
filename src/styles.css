@@ -7,17 +7,38 @@ body,
 body {
   margin: 0;
   background: #f6f8fb;
+  color: #172033;
 }
 
 a {
-  color: inherit;
+  color: #005ea8;
+  font-weight: 500;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: #003f73;
+}
+
+.main-appbar {
+  border-bottom: 1px solid #d5deea;
+  background: rgba(255, 255, 255, 0.98) !important;
+}
+
+.main-toolbar {
+  min-height: 56px !important;
+  padding: 0 22px !important;
+  gap: 18px;
 }
 
 .brand {
-  color: #222;
-  font-weight: 700;
-  margin-right: 18px;
+  color: #183153;
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  margin-right: 8px;
   text-decoration: none;
+  letter-spacing: 0;
 }
 
 .launch-buttons .MuiButton-root {
@@ -25,17 +46,39 @@ a {
   color: #183153;
   font-size: 11px;
   border-radius: 0;
+  min-height: 30px;
+  padding: 4px 10px;
+  background: #fff;
+}
+
+.launch-buttons .MuiButton-root:hover {
+  background: #eef3f9;
+}
+
+.main-nav-link {
+  min-height: 34px;
+  padding: 5px 10px !important;
+  color: #26384f !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+}
+
+.main-nav-link:hover {
+  color: #005ea8 !important;
+  background: #eef3f9 !important;
 }
 
 .free-banner {
   background: #ebc336;
   text-align: center;
+  border-bottom: 1px solid rgba(24, 49, 83, 0.2);
 }
 
 .hero {
-  background: #183153;
+  background: linear-gradient(135deg, #183153 0%, #24476f 100%);
   color: #fff;
-  padding: 48px 0;
+  padding: 58px 0 52px;
 }
 
 .hero-inner {
@@ -46,6 +89,11 @@ a {
 
 .hero-copy {
   flex: 0 0 38%;
+}
+
+.hero-copy h2,
+.hero-copy h6 {
+  letter-spacing: 0;
 }
 
 .hero-video {
@@ -68,7 +116,9 @@ a {
 
 .band {
   background: #fff;
-  padding: 32px 0;
+  padding: 40px 0;
+  border-top: 1px solid #edf1f6;
+  border-bottom: 1px solid #edf1f6;
 }
 
 .stat-card,
@@ -76,6 +126,8 @@ a {
   padding: 24px;
   min-height: 150px;
   border-radius: 6px;
+  border: 1px solid #dbe3ee;
+  box-shadow: 0 2px 10px rgba(24, 49, 83, 0.06) !important;
 }
 
 .feature-card {
@@ -116,7 +168,7 @@ a {
 }
 
 .query-drawer {
-  width: 360px;
+  width: 420px;
   top: 48px !important;
   height: calc(100% - 48px) !important;
 }
@@ -138,6 +190,14 @@ a {
 .search-tools {
   min-height: 44px !important;
   border-bottom: 1px solid #c8d2e2;
+  gap: 10px;
+}
+
+.query-form-open-button {
+  border-color: #183153 !important;
+  color: #183153 !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
 }
 
 .result-area {
@@ -160,6 +220,28 @@ a {
   border-bottom: 1px solid #bdc8d8;
 }
 
+.query-drawer-title {
+  min-height: 46px;
+  padding: 8px 12px;
+}
+
+.query-provider-note {
+  padding: 8px 12px;
+  color: #183153;
+  background: #fff9dd;
+  border-bottom: 1px solid #ead88d;
+}
+
+.query-type-row {
+  padding: 12px;
+  border-bottom: 1px solid #d8dee8;
+  background: #fbfcfe;
+}
+
+.query-form-section {
+  padding: 14px 12px 16px;
+}
+
 .drawer-footer {
   padding: 8px;
   border-top: 1px solid #bdc8d8;
@@ -169,11 +251,19 @@ a {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 8px;
+  padding: 10px 12px;
 }
 
 .annotation-tree .MuiListItemText-primary {
   font-size: 12px;
+}
+
+.annotation-tree .MuiListItemButton-root {
+  border-radius: 4px;
+}
+
+.annotation-tree .MuiListItemButton-root:hover {
+  background: #eef5ff;
 }
 
 .annotation-virtual-list {
@@ -235,6 +325,20 @@ a {
   color: #183153;
   font-size: 11px;
   font-weight: 700;
+}
+
+.active-filter-bar {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #fbfcfe;
+  border-bottom: 1px solid #d8dee8;
+}
+
+.active-filter-label {
+  color: #183153;
+  font-weight: 800 !important;
 }
 
 .virtual-table {
@@ -334,15 +438,17 @@ a {
   box-shadow: inset 0 -1px 0 #97a8bd;
 }
 
-.simple-results-table th:first-child,
-.simple-results-table td:first-child {
+.simple-results-table .pinned-column {
   position: sticky;
-  left: 0;
   z-index: 3;
   box-shadow: 2px 0 0 rgba(24, 49, 83, 0.08);
 }
 
-.simple-results-table td:first-child {
+.simple-results-table th.pinned-column {
+  z-index: 4;
+}
+
+.simple-results-table td.pinned-column {
   background: #fbfcfe;
   font-weight: 600;
 }
@@ -425,6 +531,32 @@ a {
   background: #fff;
 }
 
+.filter-panel .MuiAutocomplete-root {
+  background: #fff;
+}
+
+.filter-chip-list {
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.annotation-detail-table {
+  border: 1px solid #d8dee8;
+}
+
+.annotation-detail-table th {
+  width: 130px;
+  color: #183153;
+  font-weight: 800;
+  background: #eef3f9;
+  border-right: 1px solid #d8dee8;
+}
+
+.annotation-detail-table td,
+.annotation-detail-table th {
+  vertical-align: top;
+}
+
 .compact-panel {
   width: 100%;
 }
@@ -446,19 +578,66 @@ a {
   min-width: 0;
 }
 
+.docs-content img,
+.docs-media {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 16px auto;
+}
+
+.docs-content iframe,
+.docs-iframe {
+  display: block;
+  width: 100%;
+  max-width: 760px;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  margin: 16px auto;
+  border: 0;
+}
+
+.docs-content strong {
+  font-weight: 800;
+  color: #172033;
+}
+
 .supported-shell {
   overflow: hidden;
+  border: 1px solid #d6deea;
+  box-shadow: 0 2px 14px rgba(24, 49, 83, 0.06) !important;
+}
+
+.supported-tabs-wrap {
+  background: #fff;
+  border-bottom: 1px solid #d8dee8;
+  padding: 8px 12px 0;
 }
 
 .supported-tabs {
-  background: #fff;
+  min-height: 42px !important;
+}
+
+.supported-tabs .MuiTab-root {
+  min-height: 42px;
+  text-transform: none;
+  font-weight: 700;
+}
+
+.supported-actions {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  background: #f8fafc;
   border-bottom: 1px solid #d8dee8;
 }
 
 .supported-tree {
   height: 70vh;
   overflow: auto;
-  padding: 10px;
+  padding: 12px;
+  background: #fff;
 }
 
 .supported-version-table {

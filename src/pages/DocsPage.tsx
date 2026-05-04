@@ -1,6 +1,7 @@
 import { Box, CircularProgress, Container, Link, List, ListItemButton, ListItemText, Paper, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
 
@@ -58,6 +59,7 @@ export function DocsPage() {
           {loading ? <CircularProgress /> : (
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
               components={{
                 a: ({ href, children }) => {
                   if (!href || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('#')) {
@@ -67,7 +69,9 @@ export function DocsPage() {
                 },
                 h1: ({ children }) => <Typography variant="h3" gutterBottom>{children}</Typography>,
                 h2: ({ children }) => <Typography variant="h4" gutterBottom>{children}</Typography>,
-                p: ({ children }) => <Typography component="p" sx={{ mb: 2 }}>{children}</Typography>
+                p: ({ children }) => <Typography component="p" sx={{ mb: 2 }}>{children}</Typography>,
+                img: ({ src, alt }) => <img className="docs-media" src={src} alt={alt ?? ''} />,
+                iframe: (props) => <iframe className="docs-iframe" {...props} />
               }}
             >
               {content}

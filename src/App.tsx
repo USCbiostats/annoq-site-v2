@@ -1,9 +1,8 @@
 import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Box, Button, Drawer, IconButton, Stack, Toolbar, Typography, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useState } from 'react';
-import { Link as RouterLink, Route, Routes } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link as RouterLink, Route, Routes, useLocation } from 'react-router-dom';
 import { Footer } from './components/Footer';
 import { SearchProvider } from './features/search/searchState';
 import { AnnotationSelectionProvider } from './features/annotations/AnnotationSelectionProvider';
@@ -11,6 +10,13 @@ import { SearchWorkspace } from './features/search/SearchWorkspace';
 import { AboutPage, ContactPage, CookiePolicyPage, HomePage, NewsPage, VersionPage } from './pages/StaticPages';
 import { DocsPage } from './pages/DocsPage';
 import { SupportedAnnotationsPage } from './pages/SupportedAnnotationsPage';
+import { environment } from './lib/environment';
+
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
 
 const nav = [
   { label: 'News', to: '/release' },
@@ -25,16 +31,24 @@ export default function App() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    window.gtag?.('event', 'page_view', {
+      page_path: location.pathname + location.search,
+      send_to: environment.googleAnalyticsId
+    });
+  }, [location.pathname, location.search]);
+
   const navLinks = nav.map((item) => (
-    <Button key={item.to} component={RouterLink} to={item.to} color="inherit" onClick={() => setOpen(false)}>
+    <Button key={item.to} component={RouterLink} to={item.to} className="main-nav-link" onClick={() => setOpen(false)}>
       {item.label}
     </Button>
   ));
 
   return (
     <Box className="app-shell">
-      <AppBar position="sticky" color="inherit" elevation={1}>
-        <Toolbar variant="dense">
+      <AppBar position="sticky" color="inherit" elevation={0} className="main-appbar">
+        <Toolbar variant="dense" className="main-toolbar">
           {isMobile && (
             <IconButton edge="start" onClick={() => setOpen(true)}>
               <MenuIcon />

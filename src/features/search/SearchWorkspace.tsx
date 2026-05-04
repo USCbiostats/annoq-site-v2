@@ -2,11 +2,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ListIcon from '@mui/icons-material/List';
-import SearchIcon from '@mui/icons-material/Search';
 import TableChartIcon from '@mui/icons-material/TableChart';
+import TuneIcon from '@mui/icons-material/Tune';
 import {
   Alert,
   Box,
+  Button,
   CircularProgress,
   Drawer,
   IconButton,
@@ -178,19 +179,26 @@ export function SearchWorkspace() {
       >
         <QueryDrawer
           store={store}
+          onClose={() => setAnnotationDrawerOpen(false)}
           onSubmitted={() => {
             if (isMobile) setAnnotationDrawerOpen(false);
           }}
         />
       </Drawer>
 
-      <Box className="search-main" sx={{ ml: !isMobile && annotationDrawerOpen ? '360px' : 0 }}>
+      <Box className="search-main" sx={{ ml: !isMobile && annotationDrawerOpen ? '420px' : 0 }}>
         <Toolbar className="search-tools" variant="dense">
-          <Tooltip title="Search and annotations">
-            <IconButton color="primary" onClick={() => setAnnotationDrawerOpen(true)}>
-              <SearchIcon />
-            </IconButton>
-          </Tooltip>
+          {!annotationDrawerOpen && (
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<TuneIcon />}
+              onClick={() => setAnnotationDrawerOpen(true)}
+              className="query-form-open-button"
+            >
+              Query Form
+            </Button>
+          )}
           <Tabs
             value={state.panel}
             onChange={(_, panel) => dispatch({ type: 'setPanel', panel })}

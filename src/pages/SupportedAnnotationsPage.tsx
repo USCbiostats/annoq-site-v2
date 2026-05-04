@@ -16,8 +16,6 @@ import {
   Typography
 } from '@mui/material';
 import { useMemo, useRef, useState } from 'react';
-import type { Annotation } from '../types';
-import { AnnotationDetailDialog } from '../features/annotations/AnnotationDetailDialog';
 import { AnnotationTree } from '../features/annotations/AnnotationTree';
 import { useAnnotationSelection } from '../features/annotations/AnnotationSelectionProvider';
 import { useAnnotations } from '../features/annotations/useAnnotations';
@@ -26,13 +24,11 @@ import { downloadText, parseConfig } from '../lib/files';
 export function SupportedAnnotationsPage() {
   const annotations = useAnnotations();
   const { selected, setSelected } = useAnnotationSelection();
-  const [active, setActive] = useState<Annotation | undefined>();
   const [error, setError] = useState('');
   const [tab, setTab] = useState('annotations');
   const input = useRef<HTMLInputElement>(null);
   const store = annotations.data;
 
-  const totalLeafCount = useMemo(() => store?.annotations.filter((annotation) => annotation.leaf).length ?? 0, [store]);
   const versionRows = useMemo(
     () => store?.annotations.filter((annotation) => annotation.version && annotation.name) ?? [],
     [store]
@@ -52,32 +48,33 @@ export function SupportedAnnotationsPage() {
   return (
     <Container className="simple-page">
       <Typography variant="h3" gutterBottom>Supported Annotations</Typography>
-      <Typography component="p" sx={{ mb: 2 }}>{totalLeafCount} leaf annotation fields are available from the backend annotation tree.</Typography>
       {annotations.isLoading && <CircularProgress />}
       {annotations.error && <Alert severity="error">Unable to load annotation metadata.</Alert>}
       {error && <Alert severity="warning">{error}</Alert>}
       {store && (
         <Paper className="supported-shell">
-          <Tabs value={tab} onChange={(_, value) => setTab(value)} className="supported-tabs">
-            <Tab value="annotations" label="Annotations" />
-            <Tab value="versions" label="Data Versions" />
-          </Tabs>
+          <Box className="supported-tabs-wrap">
+            <Tabs value={tab} onChange={(_, value) => setTab(value)} className="supported-tabs">
+              <Tab value="annotations" label="Annotations" />
+              <Tab value="versions" label="Data Versions" />
+            </Tabs>
+          </Box>
           {tab === 'annotations' ? (
           <>
-          <Stack direction="row" spacing={1} className="drawer-header">
+          <Stack direction="row" spacing={1} className="supported-actions">
             <Button variant="outlined" onClick={() => setSelected([])}>Clear Selection</Button>
             <Button variant="outlined" onClick={() => input.current?.click()}>Upload Config</Button>
             <input ref={input} hidden type="file" onChange={(event) => void uploadConfig(event.target.files?.[0])} />
             <Button variant="contained" onClick={() => downloadText('config.txt', JSON.stringify({ _source: selected }))}>Export Config</Button>
           </Stack>
           <Box className="supported-tree">
-            <AnnotationTree store={store} selected={selected} onSelectedChange={setSelected} onInfo={setActive} showDescriptions />
+            <AnnotationTree store={store} selected={selected} onSelectedChange={setSelected} showDescriptions />
           </Box>
           </>
           ) : (
             <Box className="supported-version-table">
               <Typography variant="subtitle2" sx={{ p: 1 }}>
-                Built using WGSA version 095
+                Built using <a href="https://sites.google.com/site/jpopgen/wgsa" target="_blank" rel="noreferrer">WGSA</a> version 095
               </Typography>
               <Table className="annoq-table">
                 <TableHead>
@@ -99,7 +96,6 @@ export function SupportedAnnotationsPage() {
           )}
         </Paper>
       )}
-      <AnnotationDetailDialog annotation={active} onClose={() => setActive(undefined)} />
     </Container>
   );
 }

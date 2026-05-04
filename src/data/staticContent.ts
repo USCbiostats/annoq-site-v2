@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react';
-
 export const browserVersions = [
   {
     os: 'Windows',
@@ -31,7 +29,7 @@ export type ReleaseInfo = {
   date: string;
   title: string;
   version: string;
-  description: Array<{ heading?: string; items: ReactNode[]; subitems?: string[] }>;
+  description: Array<{ heading?: string; items: string[]; subitems?: string[] }>;
 };
 
 export const releases: ReleaseInfo[] = [
@@ -39,7 +37,7 @@ export const releases: ReleaseInfo[] = [
     date: 'March 10, 2026',
     title: 'TopMed Freeze 8 release',
     version: '2.0-beta.1',
-    description: [{ heading: 'New Data Release', items: ['TopMed is a larger and more diverse dataset and also includes more annotation attributes.'] }]
+    description: [{ heading: 'New Data Release', items: ['<a href="https://topmed.annoq.org" target="_blank">TopMed</a> is a larger and more diverse dataset and also includes more annotation attributes.'] }]
   },
   {
     date: 'November 10, 2025',
@@ -48,8 +46,8 @@ export const releases: ReleaseInfo[] = [
     description: [{
       heading: 'Software Updates',
       items: [
-        'A new API has been released for the AnnoQ website. Refer to AnnoQ Services for detailed information.',
-        'Two libraries AnnoQR and annoq-py that utilize the API have also been released. Tutorials for the R package and python package are also available.',
+        'A new <a href="https://api-v2.annoq.org/docs" target="_blank">API</a> has been released for the AnnoQ website. Refer to <a href="/docs/services">AnnoQ Services</a> for detailed information.',
+        'Two libraries <a href="https://github.com/USCbiostats/AnnoQR" target="_blank">AnnoQR</a> and <a href="https://github.com/USCbiostats/annoq-py" target="_blank">annoq-py</a> that utilize the API have also been released. Tutorials for the <a href="/docs/tutorials/r-package">R package</a> and <a href="/docs/tutorials/annoq-py">python package</a> are also available.',
         'The backend of the API has also been updated to optimize performance and the client UI has also been updated to use the new API.'
       ]
     }]
@@ -66,7 +64,7 @@ export const releases: ReleaseInfo[] = [
         'PANTHER Protein Class and PANTHER pathways annotations from version 19.0, released 2024-06-20',
         'Reactome annotations based on Reactome database version 86, released 2023-09-07',
         'PEREGRINE Functional Annotations have been mapped to human genes in PANTHER version 19.0, released 2024-06-20',
-        'Please refer to Data Source and Annotation Tool Version Summary for more details.'
+        'Please refer to <a href="https://annoq.org/version">Data Source and Annotation Tool Version Summary</a> for more details.'
       ]
     }]
   },
@@ -75,7 +73,7 @@ export const releases: ReleaseInfo[] = [
     title: 'Versioning information',
     version: '1.11',
     description: [{
-      items: ['This release of AnnoQ added version information about annotation packages that are used for building WGSA and also version information about other external annotations that have been integrated into the system.']
+      items: ['This release of AnnoQ added <a href="http://annoq.org/version">version information</a> about annotation packages that are used for building <a href="https://sites.google.com/site/jpopgen/wgsa" target="_blank">WGSA</a> and also version information about other external annotations that have been integrated into the system.']
     }]
   },
   {
