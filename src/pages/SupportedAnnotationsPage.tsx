@@ -48,6 +48,9 @@ export function SupportedAnnotationsPage() {
   return (
     <Container className="simple-page">
       <Typography variant="h3" gutterBottom>Supported Annotations</Typography>
+      <Typography className="supported-intro" gutterBottom>
+        Currently only human variants are supported.
+      </Typography>
       {annotations.isLoading && <CircularProgress />}
       {annotations.error && <Alert severity="error">Unable to load annotation metadata.</Alert>}
       {error && <Alert severity="warning">{error}</Alert>}

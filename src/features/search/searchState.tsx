@@ -104,7 +104,7 @@ function reducer(state: SearchState, action: Action): SearchState {
     case 'selectRow':
       return { ...state, selectedRow: action.row, sidePanel: action.row ? 'detail' : state.sidePanel };
     case 'setStatsField':
-      return { ...state, statsField: action.field, sidePanel: action.field ? 'stats' : state.sidePanel };
+      return { ...state, statsField: action.field };
     case 'statsSuccess':
       return { ...state, stats: action.stats };
     case 'setPanel':

@@ -22,6 +22,13 @@ export function SummaryPanel({ compact = false }: { compact?: boolean }) {
   return (
     <Box className={compact ? 'panel compact-panel' : 'panel'}>
       <Typography variant="subtitle2" sx={{ p: 1 }}>Summary</Typography>
+      <Box className="summary-pos-range">
+        <Typography variant="subtitle2">Pos Range</Typography>
+        <Stack direction="row" spacing={3}>
+          <Typography variant="body2"><strong>From:</strong> {result.posMin ?? '-'}</Typography>
+          <Typography variant="body2"><strong>To:</strong> {result.posMax ?? '-'}</Typography>
+        </Stack>
+      </Box>
       <List dense>
         {result.columns.map((field) => (
           <ListItem

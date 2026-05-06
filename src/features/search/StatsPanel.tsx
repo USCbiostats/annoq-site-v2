@@ -18,6 +18,8 @@ import { labelFor } from '../../lib/annotations';
 import { useAnnotations } from '../annotations/useAnnotations';
 import { useSearchState } from './searchState';
 
+const BAR_COLORS = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#17becf', '#bcbd22', '#7f7f7f'];
+
 export function StatsPanel({ compact = false }: { compact?: boolean }) {
   const { state, dispatch } = useSearchState();
   const store = useAnnotations().data;
@@ -78,7 +80,11 @@ export function StatsPanel({ compact = false }: { compact?: boolean }) {
               <XAxis type="number" />
               <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 11 }} />
               <ChartTooltip />
-              <Bar dataKey="value" fill="#183153" />
+              <Bar dataKey="value">
+                {frequencyData.map((entry, index) => (
+                  <Cell key={entry.name} fill={BAR_COLORS[index % BAR_COLORS.length]} />
+                ))}
+              </Bar>
             </BarChart>
           </ChartBox>
         </Stack>

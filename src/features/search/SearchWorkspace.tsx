@@ -126,8 +126,10 @@ export function SearchWorkspace() {
   }, [dispatch, state.page, state.requestId, state.submitted, store]);
 
   useEffect(() => {
-    if (!store || !state.submitted || !state.result || !state.statsField) return;
+    const statsField = state.statsField ?? state.result?.columns[0];
+    if (!store || !state.submitted || !state.result || !statsField) return;
     const annotationStore = store;
+    const activeStatsField = statsField;
     statsAbort.current?.abort();
     const controller = new AbortController();
     statsAbort.current = controller;
@@ -135,10 +137,10 @@ export function SearchWorkspace() {
     async function loadStats() {
       try {
         const data = await graphqlRequest<{ aggs?: ResultPage['aggs'] }>(
-          buildStatsQuery(state.submitted!, state.statsField!, state.result!, annotationStore),
+          buildStatsQuery(state.submitted!, activeStatsField, state.result!, annotationStore),
           controller.signal
         );
-        dispatch({ type: 'statsSuccess', stats: normalizeStatsResponse(state.statsField!, data, annotationStore) });
+        dispatch({ type: 'statsSuccess', stats: normalizeStatsResponse(activeStatsField, data, annotationStore) });
       } catch (error) {
         if (!controller.signal.aborted) console.warn(error);
       }

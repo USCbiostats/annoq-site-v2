@@ -106,8 +106,10 @@ export function buildStatsQuery(request: QueryRequest, field: string, page: Resu
 
   return `query AnnoQStats {
     aggs: ${fns.aggs}(${formatArgs({ ...args, ...filterArgs, histogram })}) {
-      pos { histogram { key doc_count } }
-      ${apiFieldFor(field, store)} { doc_count missing { doc_count } frequency { key doc_count } }
+      ${field === 'pos'
+        ? 'pos { doc_count min max histogram { key doc_count } }'
+        : `pos { histogram { key doc_count } }
+      ${apiFieldFor(field, store)} { doc_count missing { doc_count } frequency { key doc_count } }`}
     }
   }`;
 }

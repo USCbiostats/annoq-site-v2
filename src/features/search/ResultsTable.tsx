@@ -19,7 +19,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { graphqlRequest } from '../../lib/api';
 import { labelFor } from '../../lib/annotations';
-import { PAGE_SIZE } from '../../lib/config';
+import { API_BASE, PAGE_SIZE } from '../../lib/config';
 import { formatCell } from '../../lib/formatters';
 import { buildDownloadQuery } from '../../lib/queryBuilder';
 import { useAnnotations } from '../annotations/useAnnotations';
@@ -27,11 +27,11 @@ import { useSearchState } from './searchState';
 
 const COLUMN_WIDTH = 210;
 const DEFAULT_PINNED_BY_MODE = {
-  chromosome: ['chr', 'pos', 'ref', 'alt', 'rs_dbSNP151'],
-  vcf: ['chr', 'pos', 'ref', 'alt'],
-  geneProduct: ['chr', 'pos', 'rs_dbSNP151'],
-  rsID: ['rs_dbSNP151', 'chr', 'pos'],
-  rsIDList: ['rs_dbSNP151', 'chr', 'pos']
+  chromosome: ['chr', 'pos'],
+  vcf: ['chr', 'pos'],
+  geneProduct: ['chr', 'pos'],
+  rsID: ['rs_dbSNP151'],
+  rsIDList: ['rs_dbSNP151']
 } as const;
 
 export function ResultsTable() {
@@ -99,7 +99,10 @@ export function ResultsTable() {
   async function download() {
     if (!state.submitted || !store) return;
     const data = await graphqlRequest<{ url?: string }>(buildDownloadQuery(state.submitted, store));
-    if (data.url) window.open(data.url, '_blank', 'noopener,noreferrer');
+    if (data.url) {
+      const url = data.url.startsWith('http') ? data.url : `${API_BASE}/download${data.url}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
   }
 
   if (!result || !store) {

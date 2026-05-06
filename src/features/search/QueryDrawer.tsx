@@ -110,8 +110,7 @@ export function QueryDrawer({
 
       <Stack className="query-type-row" direction="row" sx={{ alignItems: 'center' }}>
         <Typography variant="subtitle2">Query Type</Typography>
-        <Box sx={{ flex: 1 }} />
-        <FormControl size="small" sx={{ minWidth: 150 }}>
+        <FormControl size="small" sx={{ minWidth: 230 }}>
           <InputLabel>Query Type</InputLabel>
           <Select
             label="Query Type"

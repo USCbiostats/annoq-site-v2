@@ -1,5 +1,6 @@
 import ArticleIcon from '@mui/icons-material/Article';
 import CodeIcon from '@mui/icons-material/Code';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Box, Button, Container, Grid, Link, Paper, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { browserVersions, releases } from '../data/staticContent';
@@ -16,9 +17,9 @@ export function HomePage() {
           <Stack spacing={3} className="hero-copy">
             <Typography variant="h2">The Annotation Query<br /><strong>(AnnoQ)</strong></Typography>
             <Typography variant="h6">An integrated and interactive platform for large-scale genetic variant annotation.</Typography>
-            <Stack direction="row" spacing={0}>
-              <Button component={RouterLink} to="/search" variant="contained">Launch Query UI</Button>
-              <Button component={RouterLink} to="/docs/tutorials/ui-query" variant="contained" color="secondary">UI Tutorial</Button>
+            <Stack direction="row" spacing={1.25} className="hero-actions">
+              <Button component={RouterLink} to="/search" variant="contained" className="hero-primary-button">Launch Query UI</Button>
+              <Button component={RouterLink} to="/docs/tutorials/ui-query" variant="outlined" className="hero-secondary-button">UI Tutorial</Button>
             </Stack>
           </Stack>
           <Box className="hero-video">
@@ -36,7 +37,8 @@ export function HomePage() {
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper className="stat-card">
               <Typography variant="h4">~39 million</Typography>
-              <Typography>pre-annotated variants from the Haplotype Reference Consortium (HRC)</Typography>
+              <Typography variant="caption" className="stat-hint">Currently only human variants are supported</Typography>
+              <Typography>pre-annotated variants from the <Link href="http://www.haplotype-reference-consortium.org" target="_blank">Haplotype Reference Consortium (HRC)</Link></Typography>
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
@@ -66,11 +68,20 @@ export function HomePage() {
           <Grid size={{ xs: 12, md: 7 }}>
             <Typography variant="h5">Easy To Use Interactive Query to support researchers</Typography>
             <Typography>Web interface with categories to focus on annotations of interest for biomedical objectives.</Typography>
-            <Stack spacing={1.2} sx={{ mt: 2 }}>
-              {['Select annotations', 'Choose Query Type', 'Submit query', 'View Results', 'Download Results'].map((step, index) => (
+            <Stack spacing={1.1} sx={{ mt: 2 }}>
+              {[
+                ['Select annotations', 'Organized in tree structure'],
+                ['Choose Query Type', '5 types of supported queries'],
+                ['Submit query', ''],
+                ['View Results', 'Displayed in table and summary page'],
+                ['Download Results', 'A generated file is ready to download']
+              ].map(([step, detail], index) => (
                 <Paper key={step} className="step-row">
                   <span className="step-number">{index + 1}</span>
-                  <Typography>{step}</Typography>
+                  <Box>
+                    <Typography className="step-title">{step}</Typography>
+                    {detail && <Typography variant="caption" color="text.secondary">{detail}</Typography>}
+                  </Box>
                   <Box sx={{ flex: 1 }} />
                   <Button component={RouterLink} to="/docs/tutorials/ui-query" variant="outlined">More Info</Button>
                 </Paper>
@@ -82,6 +93,9 @@ export function HomePage() {
       <Box className="band">
         <Container>
           <Typography variant="h4" align="center">Additional Programmatic Access</Typography>
+          <Typography align="center" sx={{ mt: 1 }}>
+            Query for SNP annotations using the command-line API, Python library or R Package
+          </Typography>
           <Grid container spacing={2} sx={{ mt: 1 }}>
             <Feature icon={<CodeIcon />} title="API Data Access" text="Retrieve annotation data via command line scripts." to="/docs/services" />
             <Feature icon={<CodeIcon />} title="Python library" text="Retrieve annotations using a Python library." to="/docs/tutorials/annoq-py" />
@@ -137,9 +151,9 @@ export function HomePage() {
 
 function Feature({ icon, title, text, to }: { icon: React.ReactNode; title: string; text: string; to: string }) {
   return (
-    <Grid size={{ xs: 12, md: 6 }}>
+    <Grid size={{ xs: 12, md: 4 }}>
       <Paper className="feature-card">
-        <Box className="feature-icon">{icon}</Box>
+        <Box className="feature-icon">{icon || <CheckCircleIcon />}</Box>
         <Typography variant="h6">{title}</Typography>
         <Typography>{text}</Typography>
         <Button component={RouterLink} to={to} variant="outlined">View Details</Button>
@@ -208,7 +222,7 @@ export function AboutPage() {
 
 export function NewsPage() {
   return <SimplePage title="Release Information">
-    <Table className="annoq-table">
+    <Table className="annoq-table news-table">
       <TableHead>
         <TableRow>
           <TableCell>Date</TableCell>
