@@ -16,6 +16,20 @@ npm install
 npm run dev
 ```
 
+### Custom Port
+
+To run the local server on a custom port, use the following command:
+
+```bash
+npm run dev -- --port <PORT_NUMBER>
+```
+
+Example:
+
+```bash
+npm run dev -- --port 3000
+```
+
 ## Building the site
 
 ```bash
