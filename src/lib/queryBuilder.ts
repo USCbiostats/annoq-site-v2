@@ -118,7 +118,7 @@ export function buildDownloadQuery(request: QueryRequest, store: AnnotationStore
   const fns = QUERY_FUNCTIONS[request.mode];
   const args = buildArgs(request);
   const filterArgs = buildFilterArgs(request.filters, store);
-  const fields = `[${request.fields.map((field) => gqlString(apiFieldFor(field, store))).join(',')}]`;
+  const fields = request.fields.map((field) => apiFieldFor(field, store));
   return `query AnnoQDownload {
     url: ${fns.download}(${formatArgs({ ...args, ...filterArgs, fields })})
   }`;
