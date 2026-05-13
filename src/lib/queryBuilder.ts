@@ -6,8 +6,8 @@ import type {
   ResultPage,
   StatsResult
 } from '../types';
-import { apiFieldFor, nameForApiField } from './annotations';
-import { BASE_COLUMNS, PAGE_SIZE } from './config';
+import { apiFieldFor, baseColumnsForStore, nameForApiField } from './annotations';
+import { PAGE_SIZE } from './config';
 import { parseRsidList, parseVcfIds } from './files';
 
 type QueryFns = {
@@ -47,6 +47,12 @@ export const QUERY_FUNCTIONS: Record<QueryMode, QueryFns> = {
     snps: 'get_SNPs_by_IDs',
     aggs: 'get_aggs_by_IDs',
     download: 'download_SNPs_by_IDs'
+  },
+  keyword: {
+    count: 'count_SNPs_by_keyword',
+    snps: 'get_SNPs_by_keyword',
+    aggs: 'get_aggs_by_keyword',
+    download: 'download_SNPs_by_keyword'
   }
 };
 
@@ -54,12 +60,13 @@ export function buildRequest(
   mode: QueryMode,
   values: QueryRequest['values'],
   selectedAnnotations: string[],
-  filters: string[] = []
+  filters: string[] = [],
+  store?: AnnotationStore
 ): QueryRequest {
   return {
     mode,
     values,
-    fields: unique([...BASE_COLUMNS, ...selectedAnnotations]),
+    fields: unique([...(store ? baseColumnsForStore(store) : ['chr', 'pos', 'ref', 'alt', 'rs_dbSNP151']), ...selectedAnnotations]),
     filters
   };
 }
@@ -67,7 +74,7 @@ export function buildRequest(
 export function buildPageQuery(request: QueryRequest, page: number, store: AnnotationStore): string {
   const fns = QUERY_FUNCTIONS[request.mode];
   const args = buildArgs(request);
-  const filterArgs = buildFilterArgs(request.filters, store);
+  const filterArgs = buildFilterArgs(request.filters, store, request);
   const pageArgs = `{from_: ${(page - 1) * PAGE_SIZE}, size: ${PAGE_SIZE}}`;
   const apiFields = request.fields.map((field) => apiFieldFor(field, store));
 
@@ -82,7 +89,7 @@ export function buildPageQuery(request: QueryRequest, page: number, store: Annot
 export function buildCountsQuery(request: QueryRequest, store: AnnotationStore): string {
   const fns = QUERY_FUNCTIONS[request.mode];
   const args = buildArgs(request);
-  const filterArgs = buildFilterArgs(request.filters, store);
+  const filterArgs = buildFilterArgs(request.filters, store, request);
 
   return `query AnnoQCounts {
     aggs: ${fns.aggs}(${formatArgs({ ...args, ...filterArgs })}) {
@@ -98,7 +105,7 @@ export function buildGeneInfoQuery(gene: string): string {
 export function buildStatsQuery(request: QueryRequest, field: string, page: ResultPage, store: AnnotationStore): string {
   const fns = QUERY_FUNCTIONS[request.mode];
   const args = buildArgs(request);
-  const filterArgs = buildFilterArgs(request.filters, store);
+  const filterArgs = buildFilterArgs(request.filters, store, request);
   const interval = page.posMin !== undefined && page.posMax !== undefined
     ? Math.max(1, Math.round((page.posMax - page.posMin) / 100))
     : 10_000;
@@ -117,7 +124,7 @@ export function buildStatsQuery(request: QueryRequest, field: string, page: Resu
 export function buildDownloadQuery(request: QueryRequest, store: AnnotationStore): string {
   const fns = QUERY_FUNCTIONS[request.mode];
   const args = buildArgs(request);
-  const filterArgs = buildFilterArgs(request.filters, store);
+  const filterArgs = buildFilterArgs(request.filters, store, request);
   const fields = request.fields.map((field) => apiFieldFor(field, store));
   return `query AnnoQDownload {
     url: ${fns.download}(${formatArgs({ ...args, ...filterArgs, fields })})
@@ -185,11 +192,13 @@ function buildArgs(request: QueryRequest): Record<string, unknown> {
       return { rsIDs: parseRsidList(request.values.rsIDList) };
     case 'vcf':
       return { ids: parseVcfIds(request.values.vcf) };
+    case 'keyword':
+      return { keyword: request.values.keyword.trim() };
   }
 }
 
-function buildFilterArgs(filters: string[], store: AnnotationStore): Record<string, unknown> {
-  if (!filters.length) return {};
+function buildFilterArgs(filters: string[], store: AnnotationStore, request?: QueryRequest): Record<string, unknown> {
+  if (!filters.length || request?.mode === 'keyword') return {};
   return { filter_args: { exists: filters.map((field) => apiFieldFor(field, store)) } };
 }
 

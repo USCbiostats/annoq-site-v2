@@ -30,9 +30,10 @@ export type AnnotationStore = {
   byName: Record<string, Annotation>;
   byApiField: Record<string, Annotation>;
   leafNamesByName: Record<string, string[]>;
+  rsidField: string;
 };
 
-export type QueryMode = 'chromosome' | 'vcf' | 'geneProduct' | 'rsID' | 'rsIDList';
+export type QueryMode = 'chromosome' | 'vcf' | 'geneProduct' | 'rsID' | 'rsIDList' | 'keyword';
 
 export type QueryFormValues = {
   chrom: string;
@@ -42,6 +43,7 @@ export type QueryFormValues = {
   rsID: string;
   rsIDList: string;
   vcf: string;
+  keyword: string;
 };
 
 export type QueryRequest = {

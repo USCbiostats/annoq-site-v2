@@ -133,15 +133,16 @@ Edit:
 
 ```text
 src/lib/config.ts
+src/lib/annotations.ts
 ```
 
 Look for:
 
 ```ts
-export const BASE_COLUMNS = ['chr', 'pos', 'ref', 'alt', 'rs_dbSNP151'];
+export const CORE_BASE_COLUMNS = ['chr', 'pos', 'ref', 'alt'];
 ```
 
-These columns are always requested in searches.
+These core columns are always requested in searches. The rsID column is added dynamically from `store.rsidField`, which is detected in `buildAnnotationStore`.
 
 ## Add A Query Mode
 
@@ -158,6 +159,30 @@ Files to update:
 
 4. Tests:
    Add query-builder tests in `src/lib/queryBuilder.test.ts`.
+
+## Enable Keyword Search
+
+Keyword search code exists but is hidden by default.
+
+Edit:
+
+```text
+src/lib/config.ts
+```
+
+Change:
+
+```ts
+export const ENABLE_KEYWORD_SEARCH = false;
+```
+
+to:
+
+```ts
+export const ENABLE_KEYWORD_SEARCH = true;
+```
+
+The query mode, form field, and GraphQL function mapping are already present.
 
 ## Change Query Form Layout
 
@@ -355,4 +380,3 @@ The frontend then opens:
 ```text
 {API_BASE}/download{returnedPath}
 ```
-

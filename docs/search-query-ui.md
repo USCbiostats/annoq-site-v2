@@ -57,12 +57,15 @@ Mode-specific inputs:
 - Gene Product: gene product ID.
 - rsID: one rsID.
 - rsID List: pasted/uploaded rsID list.
+- Keyword: hidden by default behind `ENABLE_KEYWORD_SEARCH`.
 
 Samples are in:
 
 ```text
 src/data/samples.ts
 ```
+
+Keyword search is implemented in the frontend and query builder but intentionally disabled in `src/lib/config.ts`. Flip `ENABLE_KEYWORD_SEARCH` to `true` to show it in the query type menu.
 
 ## Submit Flow
 
@@ -216,4 +219,3 @@ The backend returns a path. The frontend opens:
 ```
 
 The `fields` argument must be sent as a GraphQL list, not as a quoted string.
-

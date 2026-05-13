@@ -87,7 +87,7 @@ src/lib/queryBuilder.ts
 
 `buildRequest` combines:
 
-- Base columns: `chr`, `pos`, `ref`, `alt`, `rs_dbSNP151`
+- Base columns: `chr`, `pos`, `ref`, `alt`, plus the rsID field discovered from backend annotations.
 - User-selected annotations
 - Active filters
 
@@ -99,11 +99,12 @@ Configured in:
 
 ```text
 src/lib/config.ts
+src/lib/annotations.ts
 ```
 
-```ts
-export const BASE_COLUMNS = ['chr', 'pos', 'ref', 'alt', 'rs_dbSNP151'];
-```
+`CORE_BASE_COLUMNS` contains `chr`, `pos`, `ref`, and `alt`.
+
+The rsID column is not hardcoded because different datasets expose different rsID field names. `buildAnnotationStore` detects the rsID field from annotations and stores it as `store.rsidField`.
 
 These are always included in result fields.
 
@@ -169,7 +170,7 @@ For `pos`, the app requests:
 The download query must send `fields` as a GraphQL array:
 
 ```graphql
-fields: ["chr", "pos", "ref", "alt", "rs_dbSNP151"]
+fields: ["chr", "pos", "ref", "alt", "<detected rsID field>"]
 ```
 
 Not as a quoted string:
@@ -185,4 +186,3 @@ The frontend opens:
 ```
 
 This matches the old Angular behavior.
-

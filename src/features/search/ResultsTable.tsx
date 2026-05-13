@@ -26,12 +26,15 @@ import { useAnnotations } from '../annotations/useAnnotations';
 import { useSearchState } from './searchState';
 
 const COLUMN_WIDTH = 210;
+const PIN_STORAGE_KEY = 'annoq:columnPins';
+const MAX_STORED_PIN_SETS = 20;
 const DEFAULT_PINNED_BY_MODE = {
   chromosome: ['chr', 'pos'],
   vcf: ['chr', 'pos'],
   geneProduct: ['chr', 'pos'],
-  rsID: ['rs_dbSNP151'],
-  rsIDList: ['rs_dbSNP151']
+  rsID: ['rsid'],
+  rsIDList: ['rsid'],
+  keyword: ['chr', 'pos']
 } as const;
 
 export function ResultsTable() {
@@ -39,13 +42,23 @@ export function ResultsTable() {
   const store = useAnnotations().data;
   const [dialog, setDialog] = useState<{ title: string; content: React.ReactNode } | null>(null);
   const [pinnedFields, setPinnedFields] = useState<string[]>([]);
+  const [pinSignature, setPinSignature] = useState('');
   const result = state.result;
 
   useEffect(() => {
-    if (!result) return;
-    const defaults = DEFAULT_PINNED_BY_MODE[result.request.mode].filter((field) => result.columns.includes(field));
+    if (!result || !store) return;
+    const signature = columnSignature(result.columns);
+    if (signature === pinSignature) return;
+    setPinSignature(signature);
+    const saved = loadSavedPins(signature, result.columns);
+    if (saved) {
+      setPinnedFields(saved);
+      return;
+    }
+    const defaultCandidates = DEFAULT_PINNED_BY_MODE[result.request.mode].map((field) => field === 'rsid' ? store.rsidField : field);
+    const defaults = defaultCandidates.filter((field) => result.columns.includes(field));
     setPinnedFields(defaults);
-  }, [result?.request.mode, result?.columns.join('|')]);
+  }, [pinSignature, result, store]);
 
   const columnMeta = useMemo(() => {
     if (!result || !store) return [];
@@ -91,8 +104,9 @@ export function ResultsTable() {
 
   function togglePinned(field: string) {
     setPinnedFields((current) => {
-      if (current.includes(field)) return current.filter((pinned) => pinned !== field);
-      return [...current, field];
+      const next = current.includes(field) ? current.filter((pinned) => pinned !== field) : [...current, field];
+      if (pinSignature) savePins(pinSignature, next);
+      return next;
     });
   }
 
@@ -225,4 +239,64 @@ export function ResultsTable() {
       </Dialog>
     </Box>
   );
+}
+
+type StoredPinSet = {
+  key: string;
+  pins: string[];
+  updatedAt: number;
+};
+
+function columnSignature(columns: string[]): string {
+  const source = columns.join('|');
+  let hash = 5381;
+  for (let index = 0; index < source.length; index += 1) {
+    hash = ((hash << 5) + hash) ^ source.charCodeAt(index);
+  }
+  return `${columns.length}:${(hash >>> 0).toString(36)}`;
+}
+
+function loadPinSets(): StoredPinSet[] {
+  try {
+    const raw = window.localStorage.getItem(PIN_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((entry) => (
+      entry &&
+      typeof entry.key === 'string' &&
+      Array.isArray(entry.pins) &&
+      entry.pins.every((item: unknown) => typeof item === 'string') &&
+      typeof entry.updatedAt === 'number'
+    ));
+  } catch {
+    return [];
+  }
+}
+
+function loadSavedPins(signature: string, columns: string[]): string[] | undefined {
+  const saved = loadPinSets().find((entry) => entry.key === signature);
+  if (!saved) return undefined;
+  const pins = saved.pins.filter((field) => columns.includes(field));
+  savePins(signature, pins);
+  return pins;
+}
+
+function savePinSets(entries: StoredPinSet[]): void {
+  try {
+    window.localStorage.setItem(
+      PIN_STORAGE_KEY,
+      JSON.stringify(
+        [...entries]
+          .sort((a, b) => b.updatedAt - a.updatedAt)
+          .slice(0, MAX_STORED_PIN_SETS)
+      )
+    );
+  } catch {
+    // Ignore storage failures; pinning still works for the current mounted table.
+  }
+}
+
+function savePins(signature: string, pins: string[]): void {
+  const entries = loadPinSets().filter((entry) => entry.key !== signature);
+  savePinSets([{ key: signature, pins, updatedAt: Date.now() }, ...entries]);
 }

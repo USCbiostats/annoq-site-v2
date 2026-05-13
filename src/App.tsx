@@ -69,19 +69,21 @@ export default function App() {
         <Stack sx={{ width: 260, p: 1 }}>{navLinks}</Stack>
       </Drawer>
       <AnnotationSelectionProvider>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/search" element={<SearchProvider><SearchWorkspace /></SearchProvider>} />
-          <Route path="/detail" element={<SupportedAnnotationsPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/release" element={<NewsPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/cookie-policy" element={<CookiePolicyPage />} />
-          <Route path="/version" element={<VersionPage />} />
-          <Route path="/docs" element={<DocsPage />} />
-          <Route path="/docs/:section" element={<DocsPage />} />
-          <Route path="/docs/:section/:page" element={<DocsPage />} />
-        </Routes>
+        <SearchProvider>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/search" element={<SearchWorkspace />} />
+            <Route path="/detail" element={<SupportedAnnotationsPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/release" element={<NewsPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+            <Route path="/version" element={<VersionPage />} />
+            <Route path="/docs" element={<DocsPage />} />
+            <Route path="/docs/:section" element={<DocsPage />} />
+            <Route path="/docs/:section/:page" element={<DocsPage />} />
+          </Routes>
+        </SearchProvider>
       </AnnotationSelectionProvider>
       {location.pathname !== '/search' && <Footer />}
     </Box>

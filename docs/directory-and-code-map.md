@@ -9,7 +9,6 @@ annoq-site-v2/
   docs/
   public/
   src/
-  codegen.ts
   index.html
   package.json
   vite.config.ts
@@ -240,4 +239,3 @@ Vitest setup.
 
 - `setup.ts`
   Test environment setup, currently imports Testing Library jest-dom matchers.
-

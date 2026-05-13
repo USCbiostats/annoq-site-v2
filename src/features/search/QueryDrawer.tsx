@@ -23,15 +23,19 @@ import { useSearchState } from './searchState';
 import { useAnnotationSelection } from '../annotations/AnnotationSelectionProvider';
 import { SAMPLE_RSID_LIST, SAMPLE_VCF } from '../../data/samples';
 import { downloadText, parseConfig } from '../../lib/files';
+import { ENABLE_KEYWORD_SEARCH } from '../../lib/config';
 import { submitSearch } from './SearchWorkspace';
 
-const modes: Array<{ value: QueryMode; label: string }> = [
+const allModes: Array<{ value: QueryMode; label: string }> = [
   { value: 'chromosome', label: 'Chromosome' },
   { value: 'vcf', label: 'VCF File' },
   { value: 'geneProduct', label: 'Gene Product' },
   { value: 'rsID', label: 'rsID' },
-  { value: 'rsIDList', label: 'rsID List' }
+  { value: 'rsIDList', label: 'rsID List' },
+  { value: 'keyword', label: 'Keyword Search' }
 ];
+
+const modes = allModes.filter((item) => ENABLE_KEYWORD_SEARCH || item.value !== 'keyword');
 
 export function QueryDrawer({
   store,
@@ -51,21 +55,31 @@ export function QueryDrawer({
   const fileRef = useRef<HTMLInputElement>(null);
   const setSelectedAnnotations = useCallback((names: string[]) => annotationSelection.setSelected(names), [annotationSelection]);
 
+  const changeMode = useCallback((nextMode: QueryMode) => {
+    setMode(nextMode);
+    dispatch({ type: 'setMode', mode: nextMode });
+  }, [dispatch]);
+
+  const updateValues = useCallback((nextValues: Partial<typeof values>) => {
+    setValues((previous) => ({ ...previous, ...nextValues }));
+    dispatch({ type: 'setValues', values: nextValues });
+  }, [dispatch]);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const queryType = params.get('query_type');
-    if (queryType === 'chr') setMode('chromosome');
-    if (queryType === 'gp') setMode('geneProduct');
-    setValues((previous) => ({
-      ...previous,
-      chrom: params.get('chr') || previous.chrom,
-      start: params.get('start') || previous.start,
-      end: params.get('end') || previous.end,
-      geneProduct: params.get('gp') || previous.geneProduct
-    }));
+    const nextMode = queryType === 'chr' ? 'chromosome' : queryType === 'gp' ? 'geneProduct' : undefined;
+    if (nextMode) changeMode(nextMode);
+    const preloadValues = {
+      chrom: params.get('chr') || state.values.chrom,
+      start: params.get('start') || state.values.start,
+      end: params.get('end') || state.values.end,
+      geneProduct: params.get('gp') || state.values.geneProduct
+    };
+    updateValues(preloadValues);
     // URL preload should only run once on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch]);
+  }, [changeMode, updateValues]);
 
   async function readTextFile(file?: File): Promise<string> {
     if (!file) return '';
@@ -87,7 +101,7 @@ export function QueryDrawer({
       setConfigError('Select at least one annotation from the tree.');
       return;
     }
-    submitSearch(mode, values, annotationSelection.selected, [], dispatch);
+    submitSearch(mode, values, annotationSelection.selected, [], dispatch, store);
     onSubmitted();
   }
 
@@ -115,7 +129,7 @@ export function QueryDrawer({
           <Select
             label="Query Type"
             value={mode}
-            onChange={(event) => setMode(event.target.value as QueryMode)}
+            onChange={(event) => changeMode(event.target.value as QueryMode)}
           >
             {modes.map((mode) => (
               <MenuItem key={mode.value} value={mode.value}>{mode.label}</MenuItem>
@@ -127,49 +141,68 @@ export function QueryDrawer({
       <Stack spacing={1.5} className="query-form-section">
         {mode === 'chromosome' && (
           <>
-            <TextField size="small" label="Chromosome" value={values.chrom} onChange={(e) => setValues((previous) => ({ ...previous, chrom: e.target.value }))} />
+            <TextField size="small" label="Chromosome" value={values.chrom} onChange={(e) => updateValues({ chrom: e.target.value })} />
             <Stack direction="row" spacing={1}>
-              <TextField size="small" label="Start" value={values.start} onChange={(e) => setValues((previous) => ({ ...previous, start: e.target.value }))} />
-              <TextField size="small" label="End" value={values.end} onChange={(e) => setValues((previous) => ({ ...previous, end: e.target.value }))} />
+              <TextField size="small" label="Start" value={values.start} onChange={(e) => updateValues({ start: e.target.value })} />
+              <TextField size="small" label="End" value={values.end} onChange={(e) => updateValues({ end: e.target.value })} />
             </Stack>
           </>
         )}
         {mode === 'geneProduct' && (
-          <TextField size="small" label="Gene Product" value={values.geneProduct} onChange={(e) => setValues((previous) => ({ ...previous, geneProduct: e.target.value }))} />
+          <TextField size="small" label="Gene Product" value={values.geneProduct} onChange={(e) => updateValues({ geneProduct: e.target.value })} />
         )}
         {mode === 'rsID' && (
-          <TextField size="small" label="rsID" value={values.rsID} onChange={(e) => setValues((previous) => ({ ...previous, rsID: e.target.value }))} />
+          <TextField size="small" label="rsID" value={values.rsID} onChange={(e) => updateValues({ rsID: e.target.value })} />
+        )}
+        {mode === 'keyword' && ENABLE_KEYWORD_SEARCH && (
+          <TextField size="small" label="Keyword" value={values.keyword} onChange={(e) => updateValues({ keyword: e.target.value })} />
         )}
         {mode === 'rsIDList' && (
           <>
             <Stack direction="row" spacing={1}>
-              <Button size="small" onClick={() => setValues((previous) => ({ ...previous, rsIDList: SAMPLE_RSID_LIST }))}>Sample rsID List</Button>
+              <Button size="small" onClick={() => updateValues({ rsIDList: SAMPLE_RSID_LIST })}>Sample rsID List</Button>
               <Button size="small" component="label" startIcon={<FileUploadIcon />}>
                 Populate
                 <input hidden type="file" onChange={async (event) => {
                   const text = await readTextFile(event.target.files?.[0]);
-                  setValues((previous) => ({ ...previous, rsIDList: text }));
+                  updateValues({ rsIDList: text });
                 }} />
               </Button>
-              <Button size="small" onClick={() => setValues((previous) => ({ ...previous, rsIDList: '' }))}>Clear</Button>
+              <Button size="small" onClick={() => updateValues({ rsIDList: '' })}>Clear</Button>
             </Stack>
-            <TextField multiline minRows={6} label="Enter IDs" value={values.rsIDList} onChange={(e) => setValues((previous) => ({ ...previous, rsIDList: e.target.value }))} />
+            <TextField
+              multiline
+              minRows={6}
+              maxRows={6}
+              label="Enter IDs"
+              value={values.rsIDList}
+              onChange={(e) => updateValues({ rsIDList: e.target.value })}
+              className="fixed-textarea"
+            />
           </>
         )}
         {mode === 'vcf' && (
           <>
             <Stack direction="row" spacing={1}>
-              <Button size="small" onClick={() => setValues((previous) => ({ ...previous, vcf: SAMPLE_VCF }))}>Sample VCF File</Button>
+              <Button size="small" onClick={() => updateValues({ vcf: SAMPLE_VCF })}>Sample VCF File</Button>
               <Button size="small" component="label" startIcon={<FileUploadIcon />}>
                 Populate
                 <input hidden type="file" onChange={async (event) => {
                   const text = await readTextFile(event.target.files?.[0]);
-                  setValues((previous) => ({ ...previous, vcf: text }));
+                  updateValues({ vcf: text });
                 }} />
               </Button>
-              <Button size="small" onClick={() => setValues((previous) => ({ ...previous, vcf: '' }))}>Clear</Button>
+              <Button size="small" onClick={() => updateValues({ vcf: '' })}>Clear</Button>
             </Stack>
-            <TextField multiline minRows={6} label="Enter VCF rows" value={values.vcf} onChange={(e) => setValues((previous) => ({ ...previous, vcf: e.target.value }))} />
+            <TextField
+              multiline
+              minRows={6}
+              maxRows={6}
+              label="Enter VCF rows"
+              value={values.vcf}
+              onChange={(e) => updateValues({ vcf: e.target.value })}
+              className="fixed-textarea"
+            />
           </>
         )}
       </Stack>

@@ -42,7 +42,7 @@ import { SummaryPanel } from './SummaryPanel';
 import { StatsPanel } from './StatsPanel';
 import { DetailPanel } from './DetailPanel';
 import { FilterPanel } from './FilterPanel';
-import type { ResultPage } from '../../types';
+import type { AnnotationStore, ResultPage } from '../../types';
 
 export function SearchWorkspace() {
   const annotationsQuery = useAnnotations();
@@ -256,9 +256,10 @@ export function submitSearch(
   values: ReturnType<typeof useSearchState>['state']['values'],
   selectedAnnotationNames: string[],
   filters: string[],
-  dispatch: ReturnType<typeof useSearchState>['dispatch']
+  dispatch: ReturnType<typeof useSearchState>['dispatch'],
+  store?: AnnotationStore
 ) {
-  const request = buildRequest(mode, values, selectedAnnotationNames, filters);
+  const request = buildRequest(mode, values, selectedAnnotationNames, filters, store);
   dispatch({ type: 'submit', request });
 }
 

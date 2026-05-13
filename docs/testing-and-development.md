@@ -74,22 +74,6 @@ Useful future tests:
 - Docs path resolution.
 - Supported annotations config import/export flow.
 
-## GraphQL Codegen
-
-Config file:
-
-```text
-codegen.ts
-```
-
-Script:
-
-```bash
-npm run graphql:codegen
-```
-
-The current app still builds some GraphQL strings dynamically because selected annotation fields are user-driven. Codegen is useful for schema/type references, but dynamic selection remains necessary.
-
 ## Environment Variables
 
 Vite environment variables must be prefixed with `VITE_`.
@@ -114,4 +98,3 @@ Before handing changes back:
 npm run build
 npm test
 ```
-

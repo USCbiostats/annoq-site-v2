@@ -306,6 +306,11 @@ a:hover {
   padding: 14px 12px 16px;
 }
 
+.fixed-textarea textarea {
+  overflow: auto !important;
+  resize: vertical;
+}
+
 .drawer-footer {
   padding: 8px;
   border-top: 1px solid #bdc8d8;
@@ -820,5 +825,18 @@ a:hover {
   .docs-nav {
     border-right: 0;
     border-bottom: 1px solid #d8dee8;
+  }
+}
+
+@media (max-width: 600px) {
+  .simple-results-table .pinned-column {
+    position: static;
+    box-shadow: none;
+  }
+
+  .simple-results-table th,
+  .simple-results-table td {
+    width: 150px;
+    max-width: 190px;
   }
 }

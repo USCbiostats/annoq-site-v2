@@ -21,7 +21,8 @@ export function buildAnnotationStore(annotations: Annotation[]): AnnotationStore
     tree,
     byName,
     byApiField,
-    leafNamesByName
+    leafNamesByName,
+    rsidField: findRsidField(normalized)
   };
 }
 
@@ -72,4 +73,25 @@ export function nameForApiField(apiField: string, store: AnnotationStore): strin
 
 export function labelFor(name: string, store: AnnotationStore): string {
   return (store.byName[name]?.label || name).replace(/_/g, ' ');
+}
+
+export function baseColumnsForStore(store: AnnotationStore): string[] {
+  return ['chr', 'pos', 'ref', 'alt', store.rsidField];
+}
+
+function findRsidField(annotations: Annotation[]): string {
+  const exactNames = ['rs_dbSNP151', 'rs_dbSNP'];
+  for (const name of exactNames) {
+    if (annotations.some((annotation) => annotation.name === name || annotation.api_field === name)) {
+      return name;
+    }
+  }
+
+  const candidate = annotations.find((annotation) => {
+    const name = annotation.name.toLowerCase();
+    const apiField = annotation.api_field?.toLowerCase() ?? '';
+    return annotation.leaf && (name === 'rsid' || name.includes('rs_dbsnp') || apiField.includes('rs_dbsnp'));
+  });
+
+  return candidate?.name ?? 'rs_dbSNP151';
 }

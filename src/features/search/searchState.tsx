@@ -41,7 +41,8 @@ const initialValues: QueryFormValues = {
   geneProduct: 'ZMYND11',
   rsID: 'rs559687999',
   rsIDList: '',
-  vcf: ''
+  vcf: '',
+  keyword: 'Signaling by GPCR'
 };
 
 export const initialSearchState: SearchState = {
