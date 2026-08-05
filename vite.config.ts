@@ -32,6 +32,9 @@ export default defineConfig({
   plugins: [react(), hardenAgainstSocketErrors()],
   server: {
     port: 5173,
+    // Reachable through nginx as dev.annoq.org; Vite rejects unknown Host
+    // headers (DNS-rebinding guard). Leading dot allows annoq.org subdomains.
+    allowedHosts: ['.annoq.org'],
     fs: {
       // Reject requests for files outside the allowed directories.
       strict: true,

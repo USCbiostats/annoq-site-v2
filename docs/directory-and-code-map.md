@@ -11,10 +11,14 @@ annoq-site-v2/
   src/
   index.html
   package.json
+  graphql_codegen.ts
   vite.config.ts
   vitest.config.ts
   tsconfig*.json
 ```
+
+`graphql_codegen.ts` configures `npm run graphql_codegen`, which regenerates
+`src/generated/graphql.ts` from the live backend schema.
 
 ## `docs/`
 
@@ -55,10 +59,13 @@ src/
   components/
   data/
   features/
+  generated/
   lib/
   pages/
   test/
 ```
+
+`src/generated/` holds committed codegen output. Do not hand-edit it.
 
 ## `src/main.tsx`
 
