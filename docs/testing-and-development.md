@@ -34,6 +34,16 @@ Some chunks are larger than 500 kB after minification
 
 This is a warning, not a build failure. The large data/import surface and chart/UI libraries contribute to bundle size.
 
+## Refresh Backend Schema Types
+
+```bash
+npm run graphql_codegen
+```
+
+Regenerates `src/generated/graphql.ts` from the live schema and is safe to run any time. The
+file is committed, so review `git diff src/generated/graphql.ts` afterwards. Details and
+overrides are in [Backend API And GraphQL](./backend-api-and-graphql.md).
+
 ## Tests
 
 Run all tests:

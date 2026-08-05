@@ -144,6 +144,34 @@ export const CORE_BASE_COLUMNS = ['chr', 'pos', 'ref', 'alt'];
 
 These core columns are always requested in searches. The rsID column is added dynamically from `store.rsidField`, which is detected in `buildAnnotationStore`.
 
+## Pick Up Backend Schema Changes
+
+Regenerate the committed schema types:
+
+```bash
+npm run graphql_codegen
+```
+
+Then review what changed:
+
+```bash
+git diff src/generated/graphql.ts
+```
+
+The schema URL comes from `environment.annotationApiV2` in `src/lib/environment.ts`; see
+[Backend API And GraphQL](./backend-api-and-graphql.md) for overrides and caveats.
+
+The diff tells you which of these to update by hand:
+
+| Schema change | What to edit |
+| --- | --- |
+| Query function added/renamed | `QUERY_FUNCTIONS` in `src/lib/queryBuilder.ts` |
+| Argument added/renamed | `buildArgs` / `buildFilterArgs` in `src/lib/queryBuilder.ts` |
+| Aggregate or `Gene` field shape changed | `AggregationItem` / `ResultPage` in `src/types.ts` |
+| New annotation column | Nothing — served at runtime by REST `/annotations` |
+
+Commit the regenerated file alongside the code change that consumes it.
+
 ## Add A Query Mode
 
 Files to update:
@@ -156,6 +184,8 @@ Files to update:
 
 3. `src/lib/queryBuilder.ts`
    Add GraphQL function names to `QUERY_FUNCTIONS` and add argument building in `buildArgs`.
+   Confirm the names and argument names against `src/generated/graphql.ts` (`Query` and
+   `Query<Name>Args`).
 
 4. Tests:
    Add query-builder tests in `src/lib/queryBuilder.test.ts`.

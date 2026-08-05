@@ -35,6 +35,56 @@ Relevant environment variables:
 | `VITE_ANNOQ_UCSC_URL` | UCSC browser link base. |
 | `VITE_ANNOQ_GA_ID` | Google Analytics measurement id. |
 
+## Schema Types (GraphQL Codegen)
+
+Generated TypeScript types for the backend schema live in:
+
+```text
+src/generated/graphql.ts
+```
+
+This file is committed. Regenerate it whenever the backend schema changes:
+
+```bash
+npm run graphql_codegen
+```
+
+Config:
+
+```text
+graphql_codegen.ts
+```
+
+The config imports `environment.annotationApiV2` from `src/lib/environment.ts` and appends
+`/graphql`, so the schema URL always follows the same setting the app uses. Under codegen,
+`import.meta.env` maps to `process.env`, so a one-off override works:
+
+```bash
+VITE_ANNOQ_API_V2=https://api-v2.topmed.annoq.org npm run graphql_codegen
+```
+
+Note that `.env.local` files are **not** read during codegen. Only Vite loads those; the
+codegen process sees the real shell environment and otherwise falls back to the default in
+`src/lib/environment.ts`.
+
+### How These Types Are Used
+
+No runtime code imports them yet. Queries are built as strings in `src/lib/queryBuilder.ts`,
+and response shapes are hand-written in `src/types.ts` because result columns are dynamic.
+The generated file serves two purposes:
+
+- **Schema diff.** Regenerate, then `git diff src/generated/graphql.ts` to see exactly what
+  the backend added, renamed, or removed.
+- **Reference.** `Query` lists every available function; `Query<Name>Args` types give the
+  exact argument names to use in `QUERY_FUNCTIONS` and `buildArgs`.
+
+Watch for name collisions when importing: both `src/types.ts` and `src/generated/graphql.ts`
+export an `AggregationItem`. They are not identical — the generated one has
+`doc_count: number` required and `missing?: DocCount`.
+
+Annotation *fields* are not covered by codegen. Those come from the REST `/annotations`
+endpoint at runtime, so a new annotation column needs no regeneration.
+
 ## API Helpers
 
 File:

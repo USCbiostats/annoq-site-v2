@@ -59,6 +59,12 @@ Run tests:
 npm test
 ```
 
+Regenerate backend GraphQL schema types (committed to `src/generated/graphql.ts`):
+
+```bash
+npm run graphql_codegen
+```
+
 ## Important Entry Points
 
 - App bootstrap: `src/main.tsx`
