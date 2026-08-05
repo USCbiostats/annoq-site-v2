@@ -52,6 +52,7 @@ export function QueryDrawer({
   const [values, setValues] = useState(state.values);
   const [activeAnnotation, setActiveAnnotation] = useState<Annotation | undefined>();
   const [configError, setConfigError] = useState('');
+  const [emptySelectionRejected, setEmptySelectionRejected] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const setSelectedAnnotations = useCallback((names: string[]) => annotationSelection.setSelected(names), [annotationSelection]);
 
@@ -98,12 +99,21 @@ export function QueryDrawer({
 
   function submit() {
     if (!annotationSelection.selected.length) {
-      setConfigError('Select at least one annotation from the tree.');
+      setEmptySelectionRejected(true);
       return;
     }
+    setEmptySelectionRejected(false);
     submitSearch(mode, values, annotationSelection.selected, [], dispatch, store);
     onSubmitted();
   }
+
+  // Derived, not stored: the warning disappears on its own as soon as the user
+  // selects something, so it can never linger after the problem is fixed.
+  const emptySelectionWarning =
+    emptySelectionRejected && !annotationSelection.selected.length
+      ? 'Select at least one annotation from the tree.'
+      : '';
+  const warning = configError || emptySelectionWarning;
 
   return (
     <Box className="drawer-body">
@@ -222,7 +232,7 @@ export function QueryDrawer({
           showRootNode
         />
       </Box>
-      {configError && <Alert severity="warning" sx={{ m: 1 }}>{configError}</Alert>}
+      {warning && <Alert severity="warning" sx={{ m: 1 }}>{warning}</Alert>}
       <Stack className="drawer-footer" direction="row" spacing={1}>
         <Button size="small" variant="outlined" onClick={() => fileRef.current?.click()}>Upload Config</Button>
         <input ref={fileRef} hidden type="file" onChange={(event) => void onConfigChange(event.target.files?.[0])} />

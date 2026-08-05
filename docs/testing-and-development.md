@@ -63,6 +63,12 @@ Current test files:
 - `src/lib/files.test.ts`
 - `src/lib/annotations.test.ts`
 - `src/lib/queryBuilder.test.ts`
+- `src/features/search/QueryDrawer.test.tsx`
+
+Component tests render with `@testing-library/react` (jsdom environment, `src/test/setup.ts`).
+The annotation tree is virtualized and jsdom reports zero-height elements, so a component test
+that needs a selection should drive `useAnnotationSelection().setSelected` from a small helper
+component rather than clicking tree rows.
 
 ## What Is Covered
 
@@ -71,6 +77,7 @@ Current tests cover:
 - Config parsing and file helpers.
 - Annotation tree/store helpers.
 - Query builder behavior.
+- Query drawer empty-selection warning lifecycle.
 
 ## What Should Be Added Next
 
