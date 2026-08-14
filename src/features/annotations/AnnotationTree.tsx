@@ -47,7 +47,7 @@ export const AnnotationTree = memo(function AnnotationTree({
   const treeNodes = useMemo(() => {
     if (showRootNode && !(store.tree.length === 1 && store.tree[0].name === 'root')) {
       return [{
-        id: -1,
+        id: '-1', // synthetic wrapper, never an API id
         name: 'root',
         label: 'Annotations',
         leaf: false,

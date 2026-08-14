@@ -31,8 +31,7 @@ import {
   normalizePageResponse,
   normalizeStatsResponse
 } from '../../lib/queryBuilder';
-import { DEFAULT_SELECTED_ANNOTATION_IDS } from '../../lib/config';
-import { collectLeafNames, findNodeByName } from '../../lib/annotations';
+import { defaultSelectionForStore } from '../../lib/annotations';
 import { useAnnotationSelection } from '../annotations/AnnotationSelectionProvider';
 import { useAnnotations } from '../annotations/useAnnotations';
 import { useSearchState } from './searchState';
@@ -60,21 +59,9 @@ export function SearchWorkspace() {
   useEffect(() => {
     if (!store || defaultsInitialized.current || annotationSelection.selected.length > 0) return;
     defaultsInitialized.current = true;
-    const defaults = new Set<string>();
-    store.annotations
-      .filter((annotation) => DEFAULT_SELECTED_ANNOTATION_IDS.includes(annotation.id))
-      .forEach((annotation) => {
-        if (annotation.leaf) {
-          defaults.add(annotation.name);
-          return;
-        }
-        const node = findNodeByName(store.tree, annotation.name);
-        if (node) {
-          collectLeafNames(node).forEach((name) => defaults.add(name));
-        }
-      });
-    if (defaults.size === 0) return;
-    annotationSelection.setSelected([...defaults]);
+    const defaults = defaultSelectionForStore(store);
+    if (defaults.length === 0) return;
+    annotationSelection.setSelected(defaults);
   }, [annotationSelection, store]);
 
   useEffect(() => {

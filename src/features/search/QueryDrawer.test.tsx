@@ -9,8 +9,8 @@ import { SearchProvider } from './searchState';
 const EMPTY_SELECTION_WARNING = 'Select at least one annotation from the tree.';
 
 const store = buildAnnotationStore([
-  { id: 1, name: 'Basic Info', leaf: false },
-  { id: 6, parent_id: 1, name: 'rs_dbSNP151', label: 'rs ID', leaf: true }
+  { id: '1', name: 'Basic Info', leaf: false },
+  { id: '6', parent_id: '1', name: 'rs_dbSNP151', label: 'rs ID', leaf: true }
 ] as Annotation[]);
 
 // The annotation tree is virtualized, so drive the shared selection directly

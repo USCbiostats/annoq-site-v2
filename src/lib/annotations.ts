@@ -27,7 +27,7 @@ export function buildAnnotationStore(annotations: Annotation[]): AnnotationStore
 }
 
 export function buildAnnotationTree(annotations: Annotation[]): AnnotationNode[] {
-  const nodes = new Map<number, AnnotationNode>();
+  const nodes = new Map<string, AnnotationNode>();
   annotations.forEach((annotation) => {
     nodes.set(annotation.id, { ...annotation, children: [] });
   });
@@ -77,6 +77,20 @@ export function labelFor(name: string, store: AnnotationStore): string {
 
 export function baseColumnsForStore(store: AnnotationStore): string[] {
   return ['chr', 'pos', 'ref', 'alt', store.rsidField];
+}
+
+/**
+ * The annotations checked when the search window is first opened (issue #9):
+ * the VCF fields and the RSID field, all of them under "Basic Info".
+ *
+ * Deliberately name-based rather than id-based. The RSID field is a different
+ * annotation on each stack — `rs_dbSNP151` (id 6) on HRC, `rs_dbSNP` (id 756)
+ * on TOPMed — so any hardcoded id list is correct on at most one of them.
+ * Sharing `baseColumnsForStore` with `buildRequest` also keeps the checked
+ * boxes honest: those columns are requested on every query regardless.
+ */
+export function defaultSelectionForStore(store: AnnotationStore): string[] {
+  return baseColumnsForStore(store).filter((name) => store.byName[name]?.leaf);
 }
 
 function findRsidField(annotations: Annotation[]): string {
