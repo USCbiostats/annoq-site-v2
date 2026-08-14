@@ -1,3 +1,8 @@
+:root {
+  /* Fallback for the first paint; replaced with the AppBar's measured height. */
+  --annoq-appbar-h: 60px;
+}
+
 html,
 body,
 #root {
@@ -8,6 +13,31 @@ body {
   margin: 0;
   background: #f6f8fb;
   color: #172033;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/*
+ * On /search the shell owns the viewport so the page can never exceed it.
+ * The AppBar takes the height it needs and .search-shell takes the remainder,
+ * which keeps the results table the only scroller. Never reintroduce a
+ * hardcoded AppBar offset here: the AppBar is 60px of toolbar plus a 1px
+ * border, and that 1px mismatch is what issue #3 was.
+ */
+.app-shell--locked {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.app-shell--locked .main-appbar {
+  flex: 0 0 auto;
 }
 
 a {
@@ -225,21 +255,24 @@ a:hover {
 }
 
 .search-shell {
-  height: calc(100vh - 60px);
+  flex: 1;
+  min-height: 0;
   display: flex;
   overflow: hidden;
 }
 
+/* Portalled to <body> and fixed-positioned, so these cannot inherit the
+   shell's height and must track the AppBar through the measured variable. */
 .query-drawer {
   width: 420px;
-  top: 60px !important;
-  height: calc(100% - 60px) !important;
+  top: var(--annoq-appbar-h) !important;
+  height: calc(100% - var(--annoq-appbar-h)) !important;
 }
 
 .side-drawer {
   width: min(560px, 96vw);
-  top: 60px !important;
-  height: calc(100% - 60px) !important;
+  top: var(--annoq-appbar-h) !important;
+  height: calc(100% - var(--annoq-appbar-h)) !important;
 }
 
 .search-main {
@@ -263,8 +296,22 @@ a:hover {
   text-transform: none !important;
 }
 
+/*
+ * Every level from the locked shell down to the table's scroll container is
+ * sized by flex rather than by a percentage, so no level depends on its
+ * parent's height being definite.
+ */
 .result-area {
   position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.result-area > .results-view,
+.result-area > .panel,
+.result-area > .empty-state {
   flex: 1;
   min-height: 0;
 }
@@ -485,10 +532,18 @@ a:hover {
   flex: 1;
   min-height: 0;
   overflow: auto;
+  overscroll-behavior: contain;
   background:
     linear-gradient(90deg, rgba(24, 49, 83, 0.08), transparent 18px) left / 18px 100% no-repeat,
     linear-gradient(270deg, rgba(24, 49, 83, 0.08), transparent 18px) right / 18px 100% no-repeat,
     #fff;
+}
+
+/* The wrap is focusable so the table can be scrolled by keyboard, not just
+   by mouse. Chrome and Safari need the explicit tabindex; Firefox does not. */
+.simple-results-table-wrap:focus-visible {
+  outline: 2px solid #0067b1;
+  outline-offset: -2px;
 }
 
 .simple-results-table {

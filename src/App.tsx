@@ -1,7 +1,7 @@
 import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Box, Button, Drawer, IconButton, Stack, Toolbar, Typography, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link as RouterLink, Route, Routes, useLocation } from 'react-router-dom';
 import { Footer } from './components/Footer';
 import { SearchProvider } from './features/search/searchState';
@@ -31,6 +31,8 @@ export default function App() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [open, setOpen] = useState(false);
+  const appBarRef = useAppBarHeight();
+  const isSearch = location.pathname === '/search';
 
   useEffect(() => {
     window.gtag?.('event', 'page_view', {
@@ -46,8 +48,8 @@ export default function App() {
   ));
 
   return (
-    <Box className="app-shell">
-      <AppBar position="sticky" color="inherit" elevation={0} className="main-appbar">
+    <Box className={isSearch ? 'app-shell app-shell--locked' : 'app-shell'}>
+      <AppBar ref={appBarRef} position="sticky" color="inherit" elevation={0} className="main-appbar">
         <Toolbar variant="dense" className="main-toolbar">
           {isMobile && (
             <IconButton edge="start" onClick={() => setOpen(true)}>
@@ -85,7 +87,36 @@ export default function App() {
           </Routes>
         </SearchProvider>
       </AnnotationSelectionProvider>
-      {location.pathname !== '/search' && <Footer />}
+      {!isSearch && <Footer />}
     </Box>
   );
+}
+
+/**
+ * Publishes the AppBar's real height as --annoq-appbar-h so the portalled
+ * drawers can offset themselves without assuming a constant. Measured rather
+ * than hardcoded because the AppBar is 60px of toolbar plus a 1px border, and
+ * that unaccounted pixel was issue #3.
+ */
+function useAppBarHeight() {
+  const ref = useRef<HTMLElement>(null);
+
+  useLayoutEffect(() => {
+    const element = ref.current;
+    if (!element || typeof ResizeObserver === 'undefined') return;
+
+    const publish = () => {
+      document.documentElement.style.setProperty(
+        '--annoq-appbar-h',
+        `${element.getBoundingClientRect().height}px`
+      );
+    };
+
+    publish();
+    const observer = new ResizeObserver(publish);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  return ref;
 }
