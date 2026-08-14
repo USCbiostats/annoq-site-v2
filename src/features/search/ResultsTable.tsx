@@ -160,7 +160,12 @@ export function ResultsTable() {
         </Stack>
       )}
 
-      <Box className="simple-results-table-wrap">
+      <Box
+        className="simple-results-table-wrap"
+        tabIndex={0}
+        role="region"
+        aria-label="Search results table"
+      >
         <table className="simple-results-table">
           <thead>
             <tr>
