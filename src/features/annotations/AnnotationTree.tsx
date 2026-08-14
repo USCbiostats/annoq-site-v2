@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { LOCKED_ANNOTATION_NAMES } from '../../lib/config';
 import type { AnnotationNode, AnnotationStore } from '../../types';
 
 type VisibleNode = {
@@ -30,6 +31,13 @@ type Props = {
   onInfo?: (node: AnnotationNode) => void;
   showDescriptions?: boolean;
   showRootNode?: boolean;
+  /**
+   * Leaves the user may not deselect. Defaults to the app-wide locked set so a
+   * call site cannot silently opt out of an invariant the selection provider
+   * enforces anyway — a tree that let you untick `chr` would just have the box
+   * tick itself again.
+   */
+  lockedNames?: string[];
 };
 
 export const AnnotationTree = memo(function AnnotationTree({
@@ -38,9 +46,11 @@ export const AnnotationTree = memo(function AnnotationTree({
   onSelectedChange,
   onInfo,
   showDescriptions = false,
-  showRootNode = false
+  showRootNode = false,
+  lockedNames = LOCKED_ANNOTATION_NAMES
 }: Props) {
   const [query, setQuery] = useState('');
+  const lockedSet = useMemo(() => new Set(lockedNames), [lockedNames]);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set(initialExpandedNames(store.tree, showRootNode)));
   const parentRef = useRef<HTMLDivElement>(null);
   const selectedSet = useMemo(() => new Set(selected), [selected]);
@@ -81,14 +91,17 @@ export const AnnotationTree = memo(function AnnotationTree({
 
   const toggleNode = useCallback((node: AnnotationNode) => {
     const leaves = store.leafNamesByName[node.name] ?? collectNodeLeafNames(node);
+    // Deselecting acts only on the unlocked leaves, so toggling a parent such as
+    // "Basic Info" off strips ref/alt/rsID and leaves chr/pos standing. A node
+    // whose leaves are all locked has nothing to toggle at all.
+    const removable = leaves.filter((name) => !lockedSet.has(name));
+    if (removable.length === 0) return;
     const allSelected = leaves.every((name) => selectedSet.has(name));
     const next = new Set(selectedSet);
-    leaves.forEach((name) => {
-      if (allSelected) next.delete(name);
-      else next.add(name);
-    });
+    if (allSelected) removable.forEach((name) => next.delete(name));
+    else leaves.forEach((name) => next.add(name));
     onSelectedChange([...next]);
-  }, [onSelectedChange, selectedSet, store.leafNamesByName]);
+  }, [lockedSet, onSelectedChange, selectedSet, store.leafNamesByName]);
 
   return (
     <Box className="annotation-tree">
@@ -117,6 +130,7 @@ export const AnnotationTree = memo(function AnnotationTree({
             const leaves = store.leafNamesByName[node.name] ?? collectNodeLeafNames(node);
             const checked = leaves.length > 0 && leaves.every((name) => selectedSet.has(name));
             const indeterminate = !checked && leaves.some((name) => selectedSet.has(name));
+            const locked = leaves.length > 0 && leaves.every((name) => lockedSet.has(name));
             const isExpanded = expanded.has(node.name) || Boolean(query);
             const displayName = node.name === 'root' ? 'Annotations' : node.label || node.name;
             const shouldShowFieldName = node.leaf && !showDescriptions && node.name !== displayName;
@@ -148,6 +162,7 @@ export const AnnotationTree = memo(function AnnotationTree({
                   <Checkbox
                     size="small"
                     checked={checked}
+                    disabled={locked}
                     indeterminate={indeterminate}
                     onClick={(event) => event.stopPropagation()}
                     onChange={() => toggleNode(node)}

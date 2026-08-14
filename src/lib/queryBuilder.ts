@@ -7,7 +7,7 @@ import type {
   StatsResult
 } from '../types';
 import type { Query as SchemaQuery } from '../generated/graphql';
-import { apiFieldFor, baseColumnsForStore, nameForApiField } from './annotations';
+import { apiFieldFor, nameForApiField } from './annotations';
 import { PAGE_SIZE } from './config';
 import { parseRsidList, parseVcfIds } from './files';
 
@@ -67,17 +67,24 @@ export const QUERY_FUNCTIONS: Record<QueryMode, QueryFns> = {
   }
 };
 
+/**
+ * The requested fields are exactly the selection. Prepending a fixed set of
+ * "base columns" here was issue #4: `ref`, `alt` and the RSID field came back on
+ * every search no matter what the annotation tree showed, so unticking them did
+ * nothing. `chr` and `pos` are guaranteed to be present by the invariant in
+ * `AnnotationSelectionProvider`, which is the one place that can keep the tree
+ * and the query in agreement.
+ */
 export function buildRequest(
   mode: QueryMode,
   values: QueryRequest['values'],
   selectedAnnotations: string[],
-  filters: string[] = [],
-  store?: AnnotationStore
+  filters: string[] = []
 ): QueryRequest {
   return {
     mode,
     values,
-    fields: unique([...(store ? baseColumnsForStore(store) : ['chr', 'pos', 'ref', 'alt', 'rs_dbSNP151']), ...selectedAnnotations]),
+    fields: unique(selectedAnnotations),
     filters
   };
 }

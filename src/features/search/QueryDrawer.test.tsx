@@ -6,10 +6,10 @@ import { AnnotationSelectionProvider, useAnnotationSelection } from '../annotati
 import { QueryDrawer } from './QueryDrawer';
 import { SearchProvider } from './searchState';
 
-const EMPTY_SELECTION_WARNING = 'Select at least one annotation from the tree.';
-
 const store = buildAnnotationStore([
   { id: '1', name: 'Basic Info', leaf: false },
+  { id: '2', parent_id: '1', name: 'chr', leaf: true },
+  { id: '3', parent_id: '1', name: 'pos', leaf: true },
   { id: '6', parent_id: '1', name: 'rs_dbSNP151', label: 'rs ID', leaf: true }
 ] as Annotation[]);
 
@@ -41,35 +41,22 @@ beforeEach(() => {
   window.localStorage.clear();
 });
 
-describe('QueryDrawer empty selection warning', () => {
-  it('warns when submitting with nothing selected', () => {
-    const { submit } = renderDrawer();
-    submit();
-    expect(screen.getByText(EMPTY_SELECTION_WARNING)).toBeInTheDocument();
-  });
-
-  it('clears the warning as soon as an annotation is selected', () => {
-    const { submit, selectAnnotation } = renderDrawer();
-    submit();
-    selectAnnotation();
-    expect(screen.queryByText(EMPTY_SELECTION_WARNING)).not.toBeInTheDocument();
-  });
-
-  it('does not warn again when the selection is cleared after a successful submit', () => {
-    const { submit, selectAnnotation } = renderDrawer();
-    submit();
-    selectAnnotation();
-    submit();
+// The old "Select at least one annotation from the tree." guard is gone: chr and
+// pos are always selected (issue #4), so the state it rejected is unreachable.
+// What replaces it is that "Clear Selection" still leaves a submittable query.
+describe('QueryDrawer submit', () => {
+  it('submits a search when nothing beyond the locked fields is selected', () => {
+    const { submit, onSubmitted } = renderDrawer();
     fireEvent.click(screen.getByRole('button', { name: 'Clear Selection' }));
-    expect(screen.queryByText(EMPTY_SELECTION_WARNING)).not.toBeInTheDocument();
+    submit();
+    expect(onSubmitted).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText(/select at least one annotation/i)).not.toBeInTheDocument();
   });
 
-  it('submits and leaves no warning behind when selecting after the warning', () => {
+  it('submits a search after an annotation is selected', () => {
     const { submit, selectAnnotation, onSubmitted } = renderDrawer();
-    submit();
     selectAnnotation();
     submit();
     expect(onSubmitted).toHaveBeenCalledTimes(1);
-    expect(screen.queryByText(EMPTY_SELECTION_WARNING)).not.toBeInTheDocument();
   });
 });

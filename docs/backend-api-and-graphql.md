@@ -152,11 +152,14 @@ src/lib/config.ts
 src/lib/annotations.ts
 ```
 
-`CORE_BASE_COLUMNS` contains `chr`, `pos`, `ref`, and `alt`.
+`LOCKED_ANNOTATION_NAMES` contains `chr` and `pos`. Those two are always included in result fields:
+`AnnotationSelectionProvider` folds them into every selection, so `buildRequest` requests exactly the
+selection and adds nothing of its own.
 
-The rsID column is not hardcoded because different datasets expose different rsID field names. `buildAnnotationStore` detects the rsID field from annotations and stores it as `store.rsidField`.
-
-These are always included in result fields.
+`defaultSelectionForStore` additionally ticks `ref`, `alt` and the dataset's rsID field on first open,
+but those are ordinary annotations — unticking one removes it from the query. The rsID column is not
+hardcoded because different datasets expose different rsID field names; `buildAnnotationStore`
+detects it and stores it as `store.rsidField`.
 
 ## Field Mapping
 

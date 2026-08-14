@@ -84,6 +84,16 @@ describe('default annotation selection', () => {
     window.localStorage.setItem('annoq:selectedAnnotations', JSON.stringify(['ANNOVAR_ensembl_Effect']));
     const probe = await renderWorkspace(hrcAnnotations);
     await vi.waitFor(() => expect(fetchAnnotations).toHaveBeenCalled());
-    expect(probe.textContent).toBe('ANNOVAR_ensembl_Effect');
+    expect(probe.textContent).toBe('chr,pos,ANNOVAR_ensembl_Effect');
+  });
+
+  // Issue #4 makes chr and pos permanent members of the selection, so "nothing
+  // is selected" -- the condition that used to trigger seeding -- can never be
+  // observed again. Without this test the #9 defaults would silently stop
+  // appearing while every other test stayed green.
+  it('still seeds the defaults when only the locked fields are stored', async () => {
+    window.localStorage.setItem('annoq:selectedAnnotations', JSON.stringify(['chr', 'pos']));
+    const probe = await renderWorkspace(hrcAnnotations);
+    await vi.waitFor(() => expect(probe.textContent).toBe('chr,pos,ref,alt,rs_dbSNP151'));
   });
 });
