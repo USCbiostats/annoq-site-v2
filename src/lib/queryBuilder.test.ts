@@ -9,14 +9,24 @@ const store = buildAnnotationStore([
   { id: '2', name: 'custom_name', api_field: 'CUSTOM_API', label: 'Custom', parent_id: '1', leaf: true }
 ] as Annotation[]);
 
+const chromosomeValues = {
+  chrom: '18',
+  start: '1',
+  end: '500000',
+  geneProduct: '',
+  rsID: '',
+  rsIDList: '',
+  vcf: '',
+  keyword: ''
+};
+
 describe('query builder', () => {
   it('builds chromosome queries with selected API fields', () => {
     const request = buildRequest(
       'chromosome',
       { chrom: '18', start: '1', end: '500000', geneProduct: '', rsID: '', rsIDList: '', vcf: '', keyword: '' },
       ['custom_name'],
-      [],
-      store
+      []
     );
     const query = buildPageQuery(request, 1, store);
     expect(query).toContain('count_SNPs_by_chromosome');
@@ -35,22 +45,33 @@ describe('query builder', () => {
       vcf: 'chr1\t10\t.\tA\tG',
       keyword: 'Signaling by GPCR'
     };
-    expect(buildPageQuery(buildRequest('geneProduct', values, ['custom_name'], [], store), 1, store)).toContain('get_SNPs_by_gene_product');
-    expect(buildPageQuery(buildRequest('rsID', values, ['custom_name'], [], store), 1, store)).toContain('get_SNPs_by_RsID');
-    expect(buildPageQuery(buildRequest('rsIDList', values, ['custom_name'], [], store), 1, store)).toContain('rsIDs: ["rs1","rs2"]');
-    expect(buildPageQuery(buildRequest('vcf', values, ['custom_name'], [], store), 1, store)).toContain('ids: ["1:10A>G"]');
-    expect(buildPageQuery(buildRequest('keyword', values, ['custom_name'], [], store), 1, store)).toContain('keyword: "Signaling by GPCR"');
+    expect(buildPageQuery(buildRequest('geneProduct', values, ['custom_name'], []), 1, store)).toContain('get_SNPs_by_gene_product');
+    expect(buildPageQuery(buildRequest('rsID', values, ['custom_name'], []), 1, store)).toContain('get_SNPs_by_RsID');
+    expect(buildPageQuery(buildRequest('rsIDList', values, ['custom_name'], []), 1, store)).toContain('rsIDs: ["rs1","rs2"]');
+    expect(buildPageQuery(buildRequest('vcf', values, ['custom_name'], []), 1, store)).toContain('ids: ["1:10A>G"]');
+    expect(buildPageQuery(buildRequest('keyword', values, ['custom_name'], []), 1, store)).toContain('keyword: "Signaling by GPCR"');
   });
 
-  it('uses the rsID field discovered from annotations', () => {
-    const request = buildRequest(
-      'chromosome',
-      { chrom: '18', start: '1', end: '10', geneProduct: '', rsID: '', rsIDList: '', vcf: '', keyword: '' },
-      [],
-      [],
-      store
-    );
-    expect(request.fields).toContain('rs_dbSNP');
-    expect(request.fields).not.toContain('rs_dbSNP151');
+  // Issue #4: unticking ref/alt/rsID in the tree did nothing, because buildRequest
+  // prepended every "base column" to the request regardless of the selection. The
+  // requested fields are now exactly the selection; chr/pos are guaranteed to be in
+  // it by the AnnotationSelectionProvider invariant, not by this function.
+  it('requests exactly the selected annotations', () => {
+    const request = buildRequest('chromosome', chromosomeValues, ['chr', 'pos', 'custom_name'], []);
+    expect(request.fields).toEqual(['chr', 'pos', 'custom_name']);
+  });
+
+  it('omits a deselected annotation from the query it builds', () => {
+    const request = buildRequest('chromosome', chromosomeValues, ['chr', 'pos'], []);
+    expect(request.fields).not.toContain('rs_dbSNP');
+    expect(buildPageQuery(request, 1, store)).not.toContain('rs_dbSNP');
+  });
+
+  // The dataset's RSID field is discovered by `defaultSelectionForStore`, which
+  // decides what is ticked; `buildRequest` no longer chooses columns at all, so
+  // that behaviour is asserted in annotations.test.ts instead.
+  it('drops duplicates from the selection', () => {
+    const request = buildRequest('chromosome', chromosomeValues, ['chr', 'pos', 'custom_name', 'custom_name'], []);
+    expect(request.fields).toEqual(['chr', 'pos', 'custom_name']);
   });
 });

@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest';
 import type { Annotation } from '../types';
 import {
   apiFieldFor,
-  baseColumnsForStore,
   buildAnnotationStore,
   collectLeafNames,
   defaultSelectionForStore,
   nameForApiField
 } from './annotations';
+import { LOCKED_ANNOTATION_NAMES } from './config';
 
 // The API returns ids as JSON strings on both stacks. Fixtures mirror that
 // exactly: numeric-id fixtures would pass against code that cannot work
@@ -66,9 +66,11 @@ describe('defaultSelectionForStore', () => {
     expect(defaultSelectionForStore(store)).toEqual(['chr', 'pos', 'ref', 'alt', 'rs_dbSNP']);
   });
 
-  it('matches the base columns every query already requests', () => {
+  // A locked name missing from the defaults would open the tree with a box that
+  // is disabled but unticked, while the column appeared in results anyway.
+  it('includes every annotation the user cannot deselect', () => {
     const store = buildAnnotationStore(hrcAnnotations);
-    expect(defaultSelectionForStore(store)).toEqual(baseColumnsForStore(store));
+    expect(defaultSelectionForStore(store)).toEqual(expect.arrayContaining(LOCKED_ANNOTATION_NAMES));
   });
 
   it('omits defaults the store does not actually carry as leaves', () => {

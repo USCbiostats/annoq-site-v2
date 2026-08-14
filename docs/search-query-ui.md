@@ -67,31 +67,56 @@ src/data/samples.ts
 
 Keyword search is implemented in the frontend and query builder but intentionally disabled in `src/lib/config.ts`. Flip `ENABLE_KEYWORD_SEARCH` to `true` to show it in the query type menu.
 
-## Default Annotation Selection
+## Annotation Selection
 
-When the search window mounts with nothing selected, `SearchWorkspace` seeds the selection with the
-"Basic Info" fields — the VCF fields plus the dataset's RSID field:
+Two distinct ideas. Confusing them was
+[issue #4](https://github.com/USCbiostats/annoq-site-v2/issues/4).
+
+### Locked columns — always sent
+
+`LOCKED_ANNOTATION_NAMES` in `src/lib/config.ts`:
+
+```text
+chr, pos
+```
+
+These are checked and disabled in the annotation tree and cannot be removed from a query. They
+identify the variant, and `formatCell` builds the UCSC link on every `pos` cell out of the row's
+`chr`, so losing either degrades the results table silently.
+
+The rule is enforced in `AnnotationSelectionProvider`, which folds the locked names into every write
+and into `localStorage` hydration, ordering them first so they stay the leading columns. Every
+consumer — the tree, both "Clear Selection" buttons, both config uploads, the seeding effect —
+writes through that provider, so the tree, the query, storage and the exported config cannot
+disagree. `buildRequest` therefore requests exactly the selection and adds nothing of its own.
+
+Toggling a parent node such as "Basic Info" off removes only its unlocked leaves, leaving `chr` and
+`pos` checked and the parent indeterminate.
+
+### Default selection — merely the initial checkbox state
+
+When the search window mounts with nothing beyond the locked names selected, `SearchWorkspace` seeds
+every "Basic Info" field:
 
 ```text
 chr, pos, ref, alt, <rsid>
 ```
 
-The list comes from `defaultSelectionForStore` in `src/lib/annotations.ts`, which wraps
-`baseColumnsForStore` and drops any name the loaded store does not carry as a leaf.
+from `defaultSelectionForStore` in `src/lib/annotations.ts`, which drops any name the loaded store
+does not carry as a leaf. `ref`, `alt` and the RSID field are ordinary annotations: unticking one
+removes its column from the results table and from downloads.
 
-Two properties are deliberate:
+**Resolved by name, never by annotation id.** The RSID field differs per dataset — `rs_dbSNP151` on
+HRC, `rs_dbSNP` on TOPMed — and ids are renumbered by re-indexing. `findRsidField` picks the right
+one from the loaded store. An id-based default list was
+[issue #9](https://github.com/USCbiostats/annoq-site-v2/issues/9).
 
-- **Resolved by name, never by annotation id.** The RSID field differs per dataset —
-  `rs_dbSNP151` on HRC, `rs_dbSNP` on TOPMed — and ids are renumbered by re-indexing. `findRsidField`
-  picks the right one from the loaded store. An id-based default list was
-  [issue #9](https://github.com/USCbiostats/annoq-site-v2/issues/9).
-- **Same source as the query fields.** `buildRequest` already prepends `baseColumnsForStore` to every
-  request, so these columns are fetched whether or not they are checked. Seeding from the same helper
-  keeps the checkboxes honest about what the app actually sends.
+The selection persists to `localStorage` under `annoq:selectedAnnotations`. A stored selection with
+any user-chosen annotation in it is never overwritten; "Clear Selection" drops back to `chr, pos` for
+the rest of the session, and the defaults are seeded again on the next load.
 
-The selection persists to `localStorage` under `annoq:selectedAnnotations`. A stored non-empty
-selection is never overwritten; "Clear Selection" clears for the rest of the session, and the
-defaults are seeded again on the next load.
+A search with only the locked columns selected is valid — it returns a plain list of variant
+positions.
 
 ## Submit Flow
 

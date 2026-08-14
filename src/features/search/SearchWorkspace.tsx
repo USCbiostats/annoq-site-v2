@@ -32,6 +32,7 @@ import {
   normalizeStatsResponse
 } from '../../lib/queryBuilder';
 import { defaultSelectionForStore } from '../../lib/annotations';
+import { LOCKED_ANNOTATION_NAMES } from '../../lib/config';
 import { useAnnotationSelection } from '../annotations/AnnotationSelectionProvider';
 import { useAnnotations } from '../annotations/useAnnotations';
 import { useSearchState } from './searchState';
@@ -41,7 +42,7 @@ import { SummaryPanel } from './SummaryPanel';
 import { StatsPanel } from './StatsPanel';
 import { DetailPanel } from './DetailPanel';
 import { FilterPanel } from './FilterPanel';
-import type { AnnotationStore, ResultPage } from '../../types';
+import type { ResultPage } from '../../types';
 
 export function SearchWorkspace() {
   const annotationsQuery = useAnnotations();
@@ -57,7 +58,11 @@ export function SearchWorkspace() {
   const store = annotationsQuery.data;
 
   useEffect(() => {
-    if (!store || defaultsInitialized.current || annotationSelection.selected.length > 0) return;
+    // "No prior selection" cannot mean "empty" any more: chr and pos are always
+    // present (issue #4). Seed whenever nothing beyond them has been chosen, or
+    // the issue #9 defaults would silently stop appearing.
+    const hasUserSelection = annotationSelection.selected.some((name) => !LOCKED_ANNOTATION_NAMES.includes(name));
+    if (!store || defaultsInitialized.current || hasUserSelection) return;
     defaultsInitialized.current = true;
     const defaults = defaultSelectionForStore(store);
     if (defaults.length === 0) return;
@@ -243,10 +248,9 @@ export function submitSearch(
   values: ReturnType<typeof useSearchState>['state']['values'],
   selectedAnnotationNames: string[],
   filters: string[],
-  dispatch: ReturnType<typeof useSearchState>['dispatch'],
-  store?: AnnotationStore
+  dispatch: ReturnType<typeof useSearchState>['dispatch']
 ) {
-  const request = buildRequest(mode, values, selectedAnnotationNames, filters, store);
+  const request = buildRequest(mode, values, selectedAnnotationNames, filters);
   dispatch({ type: 'submit', request });
 }
 

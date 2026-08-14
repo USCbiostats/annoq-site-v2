@@ -75,22 +75,23 @@ export function labelFor(name: string, store: AnnotationStore): string {
   return (store.byName[name]?.label || name).replace(/_/g, ' ');
 }
 
-export function baseColumnsForStore(store: AnnotationStore): string[] {
-  return ['chr', 'pos', 'ref', 'alt', store.rsidField];
-}
-
 /**
  * The annotations checked when the search window is first opened (issue #9):
- * the VCF fields and the RSID field, all of them under "Basic Info".
+ * the VCF fields and the RSID field — every leaf under "Basic Info" on both
+ * stacks.
+ *
+ * This is the *initial* checkbox state and nothing more. The user may untick
+ * `ref`, `alt` or the RSID field, and doing so now removes the column from
+ * results and downloads. Only `LOCKED_ANNOTATION_NAMES` is mandatory. Keeping a
+ * second "base columns" helper alongside this one is what let those two ideas be
+ * confused for each other in issue #4, so there is deliberately only one export.
  *
  * Deliberately name-based rather than id-based. The RSID field is a different
  * annotation on each stack — `rs_dbSNP151` (id 6) on HRC, `rs_dbSNP` (id 756)
  * on TOPMed — so any hardcoded id list is correct on at most one of them.
- * Sharing `baseColumnsForStore` with `buildRequest` also keeps the checked
- * boxes honest: those columns are requested on every query regardless.
  */
 export function defaultSelectionForStore(store: AnnotationStore): string[] {
-  return baseColumnsForStore(store).filter((name) => store.byName[name]?.leaf);
+  return ['chr', 'pos', 'ref', 'alt', store.rsidField].filter((name) => store.byName[name]?.leaf);
 }
 
 function findRsidField(annotations: Annotation[]): string {

@@ -129,20 +129,24 @@ These IDs are backend annotation IDs.
 
 ## Change Base Result Columns
 
-Edit:
+Decide which of the two lists you mean — they are different things.
 
-```text
-src/lib/config.ts
-src/lib/annotations.ts
-```
-
-Look for:
+To change the columns the user **cannot deselect**, edit `src/lib/config.ts`:
 
 ```ts
-export const CORE_BASE_COLUMNS = ['chr', 'pos', 'ref', 'alt'];
+export const LOCKED_ANNOTATION_NAMES = ['chr', 'pos'];
 ```
 
-These core columns are always requested in searches. The rsID column is added dynamically from `store.rsidField`, which is detected in `buildAnnotationStore`.
+These are always requested. `AnnotationSelectionProvider` folds them into every selection, and the
+annotation tree renders them checked and disabled.
+
+To change the columns **ticked by default** on first open, edit `defaultSelectionForStore` in
+`src/lib/annotations.ts`. Those are ordinary annotations that the user may untick, which removes the
+column from results and downloads. The rsID entry is resolved dynamically from `store.rsidField`,
+detected in `buildAnnotationStore`, because the field name differs per dataset.
+
+Every locked name must also appear in the default selection, or the tree opens with a box that is
+disabled but unticked. `annotations.test.ts` asserts this.
 
 ## Pick Up Backend Schema Changes
 

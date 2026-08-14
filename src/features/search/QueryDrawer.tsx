@@ -52,7 +52,6 @@ export function QueryDrawer({
   const [values, setValues] = useState(state.values);
   const [activeAnnotation, setActiveAnnotation] = useState<Annotation | undefined>();
   const [configError, setConfigError] = useState('');
-  const [emptySelectionRejected, setEmptySelectionRejected] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const setSelectedAnnotations = useCallback((names: string[]) => annotationSelection.setSelected(names), [annotationSelection]);
 
@@ -98,22 +97,14 @@ export function QueryDrawer({
   }
 
   function submit() {
-    if (!annotationSelection.selected.length) {
-      setEmptySelectionRejected(true);
-      return;
-    }
-    setEmptySelectionRejected(false);
-    submitSearch(mode, values, annotationSelection.selected, [], dispatch, store);
+    // No empty-selection guard: chr and pos are always selected (issue #4), so
+    // a search can never be sent with no fields. "Clear Selection" leaves those
+    // two and returns a plain list of variant positions.
+    submitSearch(mode, values, annotationSelection.selected, [], dispatch);
     onSubmitted();
   }
 
-  // Derived, not stored: the warning disappears on its own as soon as the user
-  // selects something, so it can never linger after the problem is fixed.
-  const emptySelectionWarning =
-    emptySelectionRejected && !annotationSelection.selected.length
-      ? 'Select at least one annotation from the tree.'
-      : '';
-  const warning = configError || emptySelectionWarning;
+  const warning = configError;
 
   return (
     <Box className="drawer-body">
