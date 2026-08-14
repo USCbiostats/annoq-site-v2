@@ -6,16 +6,27 @@ import type {
   ResultPage,
   StatsResult
 } from '../types';
+import type { Query as SchemaQuery } from '../generated/graphql';
 import { apiFieldFor, baseColumnsForStore, nameForApiField } from './annotations';
 import { PAGE_SIZE } from './config';
 import { parseRsidList, parseVcfIds } from './files';
 
+/**
+ * A root field on the generated api-v2 `Query` type. Typing the operation names
+ * against the schema means a renamed or removed api-v2 operation fails `tsc`
+ * after `npm run graphql_codegen`, rather than surfacing as a GraphQL error at
+ * runtime for whichever query mode happened to use it.
+ */
+type QueryOperation = keyof Omit<SchemaQuery, '__typename'>;
+
 type QueryFns = {
-  count: string;
-  snps: string;
-  aggs: string;
-  download: string;
+  count: QueryOperation;
+  snps: QueryOperation;
+  aggs: QueryOperation;
+  download: QueryOperation;
 };
+
+const GENE_INFO: QueryOperation = 'gene_info';
 
 export const QUERY_FUNCTIONS: Record<QueryMode, QueryFns> = {
   chromosome: {
@@ -99,7 +110,7 @@ export function buildCountsQuery(request: QueryRequest, store: AnnotationStore):
 }
 
 export function buildGeneInfoQuery(gene: string): string {
-  return `query AnnoQGeneInfo { geneInfo: gene_info(gene: ${gqlString(gene)}) { contig end start gene_id } }`;
+  return `query AnnoQGeneInfo { geneInfo: ${GENE_INFO}(gene: ${gqlString(gene)}) { contig end start gene_id } }`;
 }
 
 export function buildStatsQuery(request: QueryRequest, field: string, page: ResultPage, store: AnnotationStore): string {

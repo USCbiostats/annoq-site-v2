@@ -4,9 +4,9 @@ import { buildPageQuery, buildRequest } from './queryBuilder';
 import type { Annotation } from '../types';
 
 const store = buildAnnotationStore([
-  { id: 1, name: 'root', label: 'Root', leaf: false },
-  { id: 3, name: 'rs_dbSNP', label: 'rsID', parent_id: 1, leaf: true },
-  { id: 2, name: 'custom_name', api_field: 'CUSTOM_API', label: 'Custom', parent_id: 1, leaf: true }
+  { id: '1', name: 'root', label: 'Root', leaf: false },
+  { id: '3', name: 'rs_dbSNP', label: 'rsID', parent_id: '1', leaf: true },
+  { id: '2', name: 'custom_name', api_field: 'CUSTOM_API', label: 'Custom', parent_id: '1', leaf: true }
 ] as Annotation[]);
 
 describe('query builder', () => {

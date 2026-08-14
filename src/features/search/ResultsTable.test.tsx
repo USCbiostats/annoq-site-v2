@@ -6,9 +6,9 @@ import { initialSearchState, SearchProvider, useSearchState } from './searchStat
 import type { Annotation, QueryRequest, ResultPage } from '../../types';
 
 const store = buildAnnotationStore([
-  { id: 1, name: 'Basic Info', leaf: false },
-  { id: 2, parent_id: 1, name: 'chr', label: 'Chromosome', leaf: true },
-  { id: 3, parent_id: 1, name: 'pos', label: 'Position', leaf: true }
+  { id: '1', name: 'Basic Info', leaf: false },
+  { id: '2', parent_id: '1', name: 'chr', label: 'Chromosome', leaf: true },
+  { id: '3', parent_id: '1', name: 'pos', label: 'Position', leaf: true }
 ] as Annotation[]);
 
 vi.mock('../annotations/useAnnotations', () => ({

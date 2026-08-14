@@ -67,6 +67,32 @@ src/data/samples.ts
 
 Keyword search is implemented in the frontend and query builder but intentionally disabled in `src/lib/config.ts`. Flip `ENABLE_KEYWORD_SEARCH` to `true` to show it in the query type menu.
 
+## Default Annotation Selection
+
+When the search window mounts with nothing selected, `SearchWorkspace` seeds the selection with the
+"Basic Info" fields — the VCF fields plus the dataset's RSID field:
+
+```text
+chr, pos, ref, alt, <rsid>
+```
+
+The list comes from `defaultSelectionForStore` in `src/lib/annotations.ts`, which wraps
+`baseColumnsForStore` and drops any name the loaded store does not carry as a leaf.
+
+Two properties are deliberate:
+
+- **Resolved by name, never by annotation id.** The RSID field differs per dataset —
+  `rs_dbSNP151` on HRC, `rs_dbSNP` on TOPMed — and ids are renumbered by re-indexing. `findRsidField`
+  picks the right one from the loaded store. An id-based default list was
+  [issue #9](https://github.com/USCbiostats/annoq-site-v2/issues/9).
+- **Same source as the query fields.** `buildRequest` already prepends `baseColumnsForStore` to every
+  request, so these columns are fetched whether or not they are checked. Seeding from the same helper
+  keeps the checkboxes honest about what the app actually sends.
+
+The selection persists to `localStorage` under `annoq:selectedAnnotations`. A stored non-empty
+selection is never overwritten; "Clear Selection" clears for the rest of the session, and the
+defaults are seeded again on the next load.
+
 ## Submit Flow
 
 1. User chooses a query mode and enters values.
