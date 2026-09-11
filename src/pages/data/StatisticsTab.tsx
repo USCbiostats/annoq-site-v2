@@ -35,7 +35,7 @@ const COLUMNS: Array<{
     key: 'hg19Entries',
     label: '# of entries in HRC r1.1',
     tooltip:
-      'Biallelic SNP rows in the HRC r1.1 reference (hg19/GRCh37). Indels and multiallelic rows are not counted, because the mapping compares SNPs only.'
+      'Biallelic SNP rows in the HRC r1.1 reference (hg19/GRCh37), the set each TopMed variant is looked up in.'
   },
   {
     key: 'mappedInHrc',
@@ -47,7 +47,7 @@ const COLUMNS: Array<{
     key: 'notFoundInHrc',
     label: '# not found in HRC r1.1',
     tooltip:
-      'TopMed variants compared against HRC r1.1 and not found in it. Indels fall here, since HRC r1.1 is matched on SNPs only.'
+      'TopMed variants that have hg19 coordinates but no matching variant in HRC r1.1. TopMed is far larger than HRC r1.1, so most variants fall here.'
   },
   {
     key: 'notComparableToHg19',

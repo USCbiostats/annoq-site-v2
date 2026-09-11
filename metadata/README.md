@@ -66,11 +66,11 @@ Fields, per chromosome:
 
 | Field | Meaning |
 | --- | --- |
-| `hrc_snp_rows` | Biallelic SNP rows in the raw HRC r1.1 reference VCF (hg19/GRCh37). Indels and multiallelic rows are skipped — the mapping compares SNPs only. |
+| `hrc_snp_rows` | Biallelic SNP rows in the raw HRC r1.1 reference VCF (hg19/GRCh37) — the key set each TopMed variant is looked up in. (`build_hrc_lookup` also guards against multiallelic and non-SNP rows, a defensive filter.) |
 | `topmed_rows` | Total TopMed variant rows. |
 | `hrc_vs_topmed_pct` | `hrc_snp_rows / topmed_rows * 100`. A size comparison of the two releases, **not** a mapping rate. |
 | `mapped_Y` | TopMed rows whose hg19 chr/pos/ref/alt matches an HRC r1.1 SNP (`Mapped_in_HRC='Y'`). |
-| `mapped_N` | TopMed rows compared and not found in HRC r1.1 (`Mapped_in_HRC='N'`). |
+| `mapped_N` | TopMed rows compared and not found in HRC r1.1 (`Mapped_in_HRC='N'`). The bulk of TopMed, which is far larger than the HRC panel. |
 | `mapped_dot` | TopMed rows never compared, because `ref_hg19=ref_hg38` is not `Y`, so there is no hg19 key to look up (`Mapped_in_HRC='.'`). |
 | `topmed_file`, `hrc_file` | The input VCFs the counts came from. |
 
