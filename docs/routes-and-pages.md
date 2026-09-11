@@ -8,7 +8,9 @@ Routes are defined in `src/App.tsx`.
 | --- | --- | --- |
 | `/` | `HomePage` | Landing page with project overview, tutorial video, stats, access options, publication, partners, browser compatibility. |
 | `/search` | `SearchProvider` + `SearchWorkspace` | Main variant annotation query UI. |
-| `/detail` | `SupportedAnnotationsPage` | Supported annotation tree, config import/export, data versions. |
+| `/detail` | `SupportedAnnotationsPage` | Supported annotation tree, config import/export. |
+| `/data` | Redirect | Sends to `/data/access`. |
+| `/data/:tab` | `DataPage` | Data area: `access`, `versions`, `statistics`. Unknown segments fall back to `access`. |
 | `/about` | `AboutPage` | Project description, members, publication, funding. |
 | `/release` | `NewsPage` | Release/news table. |
 | `/contact` | `ContactPage` | Contact email. |
@@ -95,7 +97,41 @@ It fetches backend annotations through `useAnnotations`, renders `AnnotationTree
 - Clear selection.
 - Config upload.
 - Config export.
-- Data versions table.
+
+## Data Page
+
+The data route is:
+
+```text
+/data/:tab
+```
+
+Component:
+
+```text
+src/pages/DataPage.tsx
+```
+
+`DataPage` is a tab shell only. The active tab comes from the `:tab` route segment, not component
+state, so the three tabs are linkable and bookmarkable — the Data Versions copy links directly to
+`/data/statistics`. Each tab body lives in its own file:
+
+```text
+src/pages/data/DataAccessTab.tsx    Programmatic access, links to /docs/services
+src/pages/data/DataVersionsTab.tsx  HRC history plus the annotation version table
+src/pages/data/StatisticsTab.tsx    Per-chromosome TopMed and HRC counts
+```
+
+The statistics table reads `src/data/chromosomeStats.ts`, which is **generated**. Both it and the
+ideogram SVGs under `public/assets/images/chromosomes/` come from
+`scripts/generate-chromosome-data.mjs`; regenerate with `npm run generate:chromosome-data` rather
+than editing either by hand.
+
+The annotation version table is shared with `/version`:
+
+```text
+src/features/annotations/AnnotationVersionTable.tsx
+```
 
 ## Search Page
 

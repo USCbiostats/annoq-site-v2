@@ -21,7 +21,18 @@ annoq-site-v2/
 `graphql_codegen.ts` configures `npm run graphql_codegen`, which regenerates
 `src/generated/graphql.ts` from the live backend schema.
 
+`scripts/generate-chromosome-data.mjs` backs `npm run generate:chromosome-data`, which regenerates
+`src/data/chromosomeStats.ts` and the ideogram SVGs in `public/assets/images/chromosomes/` from the
+two files in `metadata/`.
+
 ## `metadata/`
+
+`ideogram_9606_GCF_000001305.16_850_V1.txt` — NCBI Genome Decoration Page ideogram table (GRCh38,
+850-band, public domain), the source for the chromosome ideograms and base-pair lengths on the
+Data > Statistics tab. Unrelated to the annotation-tree staging described below.
+
+`merge_hrc_topmed_stats.json` — per-chromosome TopMed and HRC entry counts, the other input to that
+same table.
 
 `annotation_tree.csv` — the hand-maintained source of truth for the AnnoQ annotation tree, plus its
 `README.md`. **Not used by the app at runtime**: the tree the UI renders is built from the api-v2
@@ -164,6 +175,11 @@ Static app data.
 - `samples.ts`
   Sample rsID list and VCF content used by the query form.
 
+- `chromosomeStats.ts`
+  Per-chromosome base pairs, TopMed and HG19 entry counts and HRC mapping counts behind the Data >
+  Statistics table. **Generated** by `scripts/generate-chromosome-data.mjs` — regenerate with
+  `npm run generate:chromosome-data`, do not hand-edit it.
+
 - `panther_terms.json`
   Large local lookup map used by cell formatting for term IDs.
   Generated upstream by **annoq-data-builder** (the Java module `add_panther_enhancer`, which writes it to its working/diagnostics dir) and copied in — **do not hand-edit it**. See annoq-proj `docs/pipeline.md` → "Generated artifacts".
@@ -179,7 +195,14 @@ Route-level pages.
   Markdown docs renderer and docs navigation.
 
 - `SupportedAnnotationsPage.tsx`
-  Supported annotations browser and data versions tab.
+  Supported annotations browser.
+
+- `DataPage.tsx`
+  Tab shell for the Data area. The active tab comes from the `:tab` route segment, so each tab is
+  linkable.
+
+- `data/`
+  The three Data tab bodies: `DataAccessTab.tsx`, `DataVersionsTab.tsx`, `StatisticsTab.tsx`.
 
 ## `src/features/annotations/`
 
@@ -196,6 +219,10 @@ Annotation metadata and annotation selection UI.
 
 - `AnnotationDetailDialog.tsx`
   Table-style details dialog for one annotation field.
+
+- `AnnotationVersionTable.tsx`
+  Annotation tool/version table in annotation-tree order. Shared by `/version` and the Data Versions
+  tab.
 
 ## `src/features/search/`
 
