@@ -6,13 +6,10 @@ import {
   Container,
   Paper,
   Stack,
-  Tab,
-  Tabs,
   Typography
 } from '@mui/material';
 import { useRef, useState } from 'react';
 import { AnnotationTree } from '../features/annotations/AnnotationTree';
-import { AnnotationVersionTable } from '../features/annotations/AnnotationVersionTable';
 import { useAnnotationSelection } from '../features/annotations/AnnotationSelectionProvider';
 import { useAnnotations } from '../features/annotations/useAnnotations';
 import { trackEvent } from '../lib/analytics';
@@ -22,7 +19,6 @@ export function SupportedAnnotationsPage() {
   const annotations = useAnnotations();
   const { selected, setSelected } = useAnnotationSelection();
   const [error, setError] = useState('');
-  const [tab, setTab] = useState('annotations');
   const input = useRef<HTMLInputElement>(null);
   const store = annotations.data;
 
@@ -51,14 +47,6 @@ export function SupportedAnnotationsPage() {
       {error && <Alert severity="warning">{error}</Alert>}
       {store && (
         <Paper className="supported-shell">
-          <Box className="supported-tabs-wrap">
-            <Tabs value={tab} onChange={(_, value) => setTab(value)} className="supported-tabs">
-              <Tab value="annotations" label="Annotations" />
-              <Tab value="versions" label="Data Versions" />
-            </Tabs>
-          </Box>
-          {tab === 'annotations' ? (
-          <>
           <Stack direction="row" spacing={1} className="supported-actions">
             <Button variant="outlined" onClick={() => {
               trackEvent('clear_selection', { page_path: '/detail' });
@@ -74,12 +62,6 @@ export function SupportedAnnotationsPage() {
           <Box className="supported-tree">
             <AnnotationTree store={store} selected={selected} onSelectedChange={setSelected} showDescriptions />
           </Box>
-          </>
-          ) : (
-            <Box className="supported-version-table">
-              <AnnotationVersionTable tree={store.tree} />
-            </Box>
-          )}
         </Paper>
       )}
     </Container>

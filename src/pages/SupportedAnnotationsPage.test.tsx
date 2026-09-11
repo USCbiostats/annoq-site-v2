@@ -59,27 +59,17 @@ describe('SupportedAnnotationsPage analytics', () => {
   });
 });
 
-// The Data Versions tab used to render `store.annotations`, i.e. the raw
-// /annotations array order -- which lists every category node before any leaf,
-// so a row's neighbours were unrelated to it. annoq-site's /version page walks
-// the flattened tree instead, grouping each row under its category. This asserts
-// the tree ordering, which also happens to honour the `sort` field the API sets
-// on the top-level categories.
-describe('SupportedAnnotationsPage data versions ordering', () => {
-  function versionTableRows() {
-    fireEvent.click(screen.getByRole('tab', { name: 'Data Versions' }));
-    return [...document.querySelectorAll('tbody tr')].map(
-      (row) => row.querySelector('td')?.textContent ?? ''
-    );
-  }
-
-  it('lists version rows in annotation-tree order, not raw response order', () => {
+// annoq-site-v2#22 moved this table to Data > Data Versions; the page is back
+// to being just the annotation tree.
+describe('SupportedAnnotationsPage tabs', () => {
+  it('no longer offers a Data Versions tab', () => {
     renderPage();
-    expect(versionTableRows()).toEqual(['chr', 'ANNOVAR', 'ANNOVAR_gene', 'HRC_chr_pos']);
+    expect(screen.queryByRole('tab', { name: 'Data Versions' })).toBeNull();
+    expect(screen.queryByRole('tab')).toBeNull();
   });
 
-  it('keeps every row that carries a version', () => {
+  it('still shows the annotation tree controls', () => {
     renderPage();
-    expect(versionTableRows()).toHaveLength(4);
+    expect(screen.getByRole('button', { name: 'Upload Config' })).toBeInTheDocument();
   });
 });
