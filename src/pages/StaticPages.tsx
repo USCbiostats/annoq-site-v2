@@ -4,7 +4,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { browserVersions, releases } from '../data/staticContent';
 import { API_DOCS_URL } from '../lib/config';
 import { useAnnotations } from '../features/annotations/useAnnotations';
-import { flattenAnnotationTree } from '../lib/annotations';
+import { AnnotationVersionTable } from '../features/annotations/AnnotationVersionTable';
 
 export function HomePage() {
   return (
@@ -410,18 +410,11 @@ function DataTable({ columns, rows }: { columns: string[]; rows: string[][] }) {
 
 function VersionContent() {
   const annotations = useAnnotations();
-  // Tree order, not response order: the Angular site listed these in the order the
-  // annotation tree nests them, and the flat list from /annotations is ordered
-  // differently, which silently reshuffled this table during the port.
-  const rows = flattenAnnotationTree(annotations.data?.tree ?? [])
-    .filter((annotation) => annotation.version && annotation.name)
-    .map((annotation) => [annotation.label || annotation.name, annotation.version || '']);
   return <SimplePage title="Data Source and Annotation Tool Version Summary">
-    <Typography color="text.secondary">Built using <Link href="https://sites.google.com/site/jpopgen/wgsa">WGSA</Link> version 095</Typography>
     {annotations.isLoading ? (
       <Typography>Loading version information...</Typography>
     ) : (
-      <DataTable columns={['SNP Detail/Annotation Tool', 'Version']} rows={rows} />
+      <AnnotationVersionTable tree={annotations.data?.tree ?? []} />
     )}
   </SimplePage>;
 }
