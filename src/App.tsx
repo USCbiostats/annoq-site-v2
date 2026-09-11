@@ -2,7 +2,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Box, Button, Drawer, IconButton, Stack, Toolbar, Typography, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Link as RouterLink, Route, Routes, useLocation } from 'react-router-dom';
+import { Link as RouterLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Footer } from './components/Footer';
 import { BusyProvider } from './features/busy/busyState';
 import { BusyBar } from './features/busy/BusyBar';
@@ -13,13 +13,14 @@ import { SearchWorkspace } from './features/search/SearchWorkspace';
 import { AboutPage, ContactPage, CookiePolicyPage, HomePage, NewsPage, VersionPage } from './pages/StaticPages';
 import { DocsPage } from './pages/DocsPage';
 import { SupportedAnnotationsPage } from './pages/SupportedAnnotationsPage';
+import { DataPage } from './pages/DataPage';
 import { environment } from './lib/environment';
 import { trackEvent } from './lib/analytics';
 
 const nav = [
   { label: 'News', to: '/release' },
   { label: 'Supported Annotations', to: '/detail' },
-  { label: 'Data Access', to: '/docs/services' },
+  { label: 'Data', to: '/data' },
   { label: 'About', to: '/about' },
   { label: 'Help/Tutorial', to: '/docs' }
 ];
@@ -62,7 +63,6 @@ export default function App() {
               <Button component={RouterLink} to="/search" variant="outlined">Launch Query UI</Button>
               <Button component={RouterLink} to="/docs/tutorials/ui-query" variant="outlined">UI Tutorial</Button>
             </Stack>
-            <Button component={RouterLink} to="/version" className="beta-label">TopMed Beta Release</Button>
             <Box sx={{ flex: 1 }} />
             {!isMobile && <Stack direction="row">{navLinks}</Stack>}
           </Toolbar>
@@ -78,6 +78,8 @@ export default function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/search" element={<SearchWorkspace />} />
                 <Route path="/detail" element={<SupportedAnnotationsPage />} />
+                <Route path="/data" element={<Navigate to="/data/access" replace />} />
+                <Route path="/data/:tab" element={<DataPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/release" element={<NewsPage />} />
                 <Route path="/contact" element={<ContactPage />} />

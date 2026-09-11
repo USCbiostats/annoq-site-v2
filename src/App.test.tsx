@@ -30,12 +30,29 @@ describe('app shell viewport lock', () => {
   });
 });
 
-// annoq-site#78: the site serves the TOPMed beta during the cutover and says
-// so in the toolbar, matching the banner annoq-site carries.
-describe('TopMed beta label', () => {
-  it('links the beta label to the version page', () => {
+// annoq-site-v2#22 retires the beta button and folds data access into a Data
+// menu item. /version itself stays -- the release notes still link to it.
+describe('primary navigation', () => {
+  it('no longer shows the TopMed beta release button', () => {
     renderAt('/');
-    const label = screen.getByRole('link', { name: 'TopMed Beta Release' });
-    expect(label).toHaveAttribute('href', '/version');
+    expect(screen.queryByRole('link', { name: 'TopMed Beta Release' })).toBeNull();
+  });
+
+  it('exposes a Data nav item', () => {
+    renderAt('/');
+    expect(screen.getByRole('link', { name: 'Data' })).toHaveAttribute('href', '/data');
+  });
+
+  it('drops the old Data Access nav item', () => {
+    renderAt('/');
+    expect(screen.queryByRole('link', { name: 'Data Access' })).toBeNull();
+  });
+
+  it('redirects /data to the access tab', () => {
+    renderAt('/data');
+    expect(screen.getByRole('tab', { name: 'Data Access' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
   });
 });
