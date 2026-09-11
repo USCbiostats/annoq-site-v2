@@ -1037,3 +1037,37 @@ a:hover {
   color: rgba(0, 0, 0, 0.54);
   font-style: italic;
 }
+
+.data-tab-body {
+  padding: 16px;
+  background: #fff;
+}
+
+.data-prose {
+  max-width: 72ch;
+  color: #33465f;
+}
+
+.data-statistics-scroll {
+  overflow-x: auto;
+}
+
+.data-statistics-table th,
+.data-statistics-table td {
+  white-space: nowrap;
+}
+
+.chromosome-cell img {
+  display: block;
+  height: auto;
+}
+
+.chromosome-cell span {
+  font-weight: 700;
+  color: #183153;
+}
+
+.data-sources {
+  padding: 12px 4px 4px;
+  color: #4a5a72;
+}
