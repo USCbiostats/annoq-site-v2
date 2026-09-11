@@ -50,3 +50,18 @@ following locations:
 
 The original version of this note pointed target 1 at `annoq-api`, which is **deprecated** and
 replaced by `annoq-api-v2`; the data-builder still copies `anno_tree.json` into both.
+
+# ideogram_9606_GCF_000001305.16_850_V1.txt
+
+NCBI [Genome Decoration Page](https://ftp.ncbi.nlm.nih.gov/pub/gdp/) ideogram table for *Homo
+sapiens*, GRCh38, 850-band resolution. Public domain.
+
+Unrelated to the annotation-tree staging described above, and not affected by annoq-site#78.
+
+Used at build time only, by `scripts/generate-chromosome-data.mjs`, which renders the chromosome
+ideograms and the base-pair column for the Data > Statistics table. Together with
+`merge_hrc_topmed_stats.json` it produces `src/data/chromosomeStats.ts` and
+`public/assets/images/chromosomes/*.svg`, both of which are committed. Regenerate with
+`npm run generate:chromosome-data`.
+
+The assembly matters: chromosome 1 must end at 248,956,422 bp (GRCh38), not 249,250,621 (GRCh37).
