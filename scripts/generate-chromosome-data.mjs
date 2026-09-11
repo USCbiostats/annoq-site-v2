@@ -39,10 +39,12 @@ const STAIN_FILL = {
   acen: '#b03a34'
 };
 
-const SVG_WIDTH = 18;
+// Chromosomes are far longer than they are wide, and the short ones have to
+// keep looking like chromosomes: at 18 wide the 46Mb of chr21 came out square.
+const SVG_WIDTH = 12;
 // chr1 is drawn at this height and every other chromosome is scaled against it,
 // so chr21 reads as visibly short rather than every row looking the same size.
-const MAX_HEIGHT = 96;
+const MAX_HEIGHT = 132;
 
 const round = (value) => Math.round(value * 100) / 100;
 
@@ -90,12 +92,16 @@ function ideogramSvg(chromosome, bands, longest) {
     return `<rect y="${y}" width="${width}" height="${bandHeight}" fill="${fill}"/>`;
   });
 
+  // Cap the cap: a fixed width/2 radius swallowed the whole of a short
+  // chromosome and drew chr19 and chr21 as circles.
+  const radius = round(Math.min(width / 2, height / 4));
+
   const clipId = `chr${chromosome}-body`;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="Chromosome ${chromosome} ideogram">
 <title>Chromosome ${chromosome} ideogram</title>
-<defs><clipPath id="${clipId}"><rect width="${width}" height="${height}" rx="${width / 2}" ry="${width / 2}"/></clipPath></defs>
+<defs><clipPath id="${clipId}"><rect width="${width}" height="${height}" rx="${radius}" ry="${radius}"/></clipPath></defs>
 <g clip-path="url(#${clipId})">${shapes.join('')}</g>
-<rect x="0.5" y="0.5" width="${width - 1}" height="${round(height - 1)}" rx="${round(width / 2 - 0.5)}" ry="${round(width / 2 - 0.5)}" fill="none" stroke="#5b6b82" stroke-width="1"/>
+<rect x="0.4" y="0.4" width="${round(width - 0.8)}" height="${round(height - 0.8)}" rx="${round(Math.max(radius - 0.4, 0))}" ry="${round(Math.max(radius - 0.4, 0))}" fill="none" stroke="#5b6b82" stroke-width="0.8"/>
 </svg>
 `;
 }
