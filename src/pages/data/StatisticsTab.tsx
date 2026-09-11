@@ -61,8 +61,8 @@ export function StatisticsTab() {
   return (
     <Box className="data-tab-body">
       <Typography className="data-prose" gutterBottom>
-        Variant counts per chromosome, comparing the TopMed release with the Haplotype Reference
-        Consortium (HRC) data on hg19 and the portion of it mapped into TopMed.
+        Variant counts per chromosome, comparing the TopMed freeze 8 release with the Haplotype
+        Reference Consortium release r1.1 and mapped counts.
       </Typography>
       <Box className="data-statistics-scroll">
         <Table className="annoq-table data-statistics-table">
