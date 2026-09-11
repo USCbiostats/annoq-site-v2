@@ -1051,9 +1051,14 @@ a:hover {
   overflow-x: auto;
 }
 
-.data-statistics-table th,
+/* Numbers stay on one line; headers wrap, or the widest label sets the column
+   width and the table runs far wider than the data needs. */
 .data-statistics-table td {
   white-space: nowrap;
+}
+
+.data-statistics-table th {
+  white-space: normal;
 }
 
 .chromosome-cell img {
@@ -1077,8 +1082,13 @@ a:hover {
 }
 
 .data-statistics-header {
+  display: inline-block;
+  max-width: 12ch;
   cursor: help;
-  border-bottom: 1px dotted #7d8ba1;
+  /* text-decoration, not border-bottom: on a wrapped label a border underlines
+     only the last line. */
+  text-decoration: underline dotted #7d8ba1;
+  text-underline-offset: 3px;
 }
 
 /* With eight columns the table scrolls sideways, and an unpinned first column
