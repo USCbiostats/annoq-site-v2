@@ -31,10 +31,17 @@ describe('DataVersionsTab', () => {
 
   it('links the mapping detail to the statistics tab', () => {
     renderTab();
-    expect(screen.getByRole('link', { name: 'Data Statistics' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Statistics' })).toHaveAttribute(
       'href',
       '/data/statistics'
     );
+  });
+
+  it('refers the reader to the per-chromosome detail', () => {
+    renderTab();
+    expect(
+      screen.getByText(/detailed chromosome specific TOPMed and HRC information/i)
+    ).toBeInTheDocument();
   });
 
   it('says not all HRC data was mapped', () => {

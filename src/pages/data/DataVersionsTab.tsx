@@ -16,10 +16,9 @@ export function DataVersionsTab() {
         <Link href={ARCHIVE_URL} target="_blank" rel="noreferrer">archive.annoq.org</Link>. To
         support users who want to continue using HRC and access TopMed's richer annotations,
         functionality has been added to search for HRC data. Note, not all of the HRC data was
-        mapped to TopMed.{' '}
-        <Link component={RouterLink} to="/data/statistics">Data Statistics</Link> has detailed HRC
-        mapping information, and the annotations under the &ldquo;HG19 Info&rdquo; category have
-        more details.
+        mapped to TopMed. Refer to{' '}
+        <Link component={RouterLink} to="/data/statistics">Statistics</Link> for detailed chromosome
+        specific TOPMed and HRC information.
       </Typography>
       <Box className="data-version-table">
         {annotations.isLoading ? (

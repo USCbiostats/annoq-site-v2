@@ -33,7 +33,7 @@ export function AnnotationVersionTable({ tree }: { tree: AnnotationNode[] }) {
 
   return (
     <>
-      <Typography variant="subtitle2" sx={{ p: 1 }}>
+      <Typography variant="subtitle2" sx={{ pt: 3, pb: 1, px: 1 }}>
         Built using <a href={WGSA_URL} target="_blank" rel="noreferrer">WGSA</a> version 095
       </Typography>
       <Table className="annoq-table">
