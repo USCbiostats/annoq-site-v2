@@ -6,7 +6,12 @@
 //     Supplies the cytogenetic banding drawn into the SVGs and the base-pair
 //     length of each chromosome (the largest bp_stop on that chromosome).
 //   metadata/merge_hrc_topmed_stats.json
-//     Per-chromosome TopMed and HRC entry counts.
+//     Per-chromosome TopMed and HRC r1.1 counts, produced by
+//     annoq-data-builder/wgsa_add/merge_hrc_topmed.py.
+//
+// mapped_Y, mapped_N and mapped_dot partition topmed_rows exactly: every TopMed
+// row is classified by its Mapped_in_HRC value, which merge_hrc_topmed.py sets
+// to 'Y', 'N' or '.'.
 //
 // Regenerate with: npm run generate:chromosome-data
 
@@ -17,10 +22,21 @@ export type ChromosomeStat = {
   basePairs: number;
   /** Variant rows in TopMed (hg38). */
   topmedEntries: number;
-  /** Variant rows in the HRC hg19 release. */
+  /**
+   * Biallelic SNP rows in the raw HRC r1.1 reference VCF (hg19/GRCh37). Indels and
+   * multiallelic rows are skipped by merge_hrc_topmed.py's lookup builder.
+   */
   hg19Entries: number;
-  /** HRC rows that carry Mapped_in_HRC = Y in TopMed. */
+  /** TopMed rows whose hg19 chr/pos/ref/alt matches an HRC r1.1 SNP (Mapped_in_HRC = Y). */
   mappedInHrc: number;
+  /** TopMed rows compared against HRC r1.1 and not found there (Mapped_in_HRC = N). */
+  notFoundInHrc: number;
+  /**
+   * TopMed rows never compared, because their hg19 reference allele disagrees with
+   * hg38 (the ref_hg19=ref_hg38 flag is not 'Y'), so there is no hg19 key to look up
+   * (Mapped_in_HRC = '.').
+   */
+  notComparableToHg19: number;
   /** hg19Entries as a percentage of topmedEntries, as reported upstream. */
   hrcVsTopmedPct: number;
   /** Site-absolute path to the generated ideogram SVG. */
@@ -28,27 +44,27 @@ export type ChromosomeStat = {
 };
 
 export const chromosomeStats: ChromosomeStat[] = [
-  { chromosome: '1', basePairs: 248956422, topmedEntries: 57577226, hg19Entries: 3069931, mappedInHrc: 2992535, hrcVsTopmedPct: 5.3318, ideogram: '/assets/images/chromosomes/chr1.svg' },
-  { chromosome: '2', basePairs: 242193529, topmedEntries: 61727855, hg19Entries: 3392237, mappedInHrc: 3320470, hrcVsTopmedPct: 5.4955, ideogram: '/assets/images/chromosomes/chr2.svg' },
-  { chromosome: '3', basePairs: 198295559, topmedEntries: 50368782, hg19Entries: 2821894, mappedInHrc: 2764965, hrcVsTopmedPct: 5.6025, ideogram: '/assets/images/chromosomes/chr3.svg' },
-  { chromosome: '4', basePairs: 190214555, topmedEntries: 48490718, hg19Entries: 2787581, mappedInHrc: 2731367, hrcVsTopmedPct: 5.7487, ideogram: '/assets/images/chromosomes/chr4.svg' },
-  { chromosome: '5', basePairs: 181538259, topmedEntries: 45439747, hg19Entries: 2588168, mappedInHrc: 2536624, hrcVsTopmedPct: 5.6958, ideogram: '/assets/images/chromosomes/chr5.svg' },
-  { chromosome: '6', basePairs: 170805979, topmedEntries: 42027327, hg19Entries: 2460111, mappedInHrc: 2405182, hrcVsTopmedPct: 5.8536, ideogram: '/assets/images/chromosomes/chr6.svg' },
-  { chromosome: '7', basePairs: 159345973, topmedEntries: 40659953, hg19Entries: 2289305, mappedInHrc: 2235309, hrcVsTopmedPct: 5.6304, ideogram: '/assets/images/chromosomes/chr7.svg' },
-  { chromosome: '8', basePairs: 145138636, topmedEntries: 39139389, hg19Entries: 2242705, mappedInHrc: 2195324, hrcVsTopmedPct: 5.73, ideogram: '/assets/images/chromosomes/chr8.svg' },
-  { chromosome: '9', basePairs: 138394717, topmedEntries: 32559922, hg19Entries: 1686471, mappedInHrc: 1646301, hrcVsTopmedPct: 5.1796, ideogram: '/assets/images/chromosomes/chr9.svg' },
-  { chromosome: '10', basePairs: 133797422, topmedEntries: 34039169, hg19Entries: 1927503, mappedInHrc: 1876436, hrcVsTopmedPct: 5.6626, ideogram: '/assets/images/chromosomes/chr10.svg' },
-  { chromosome: '11', basePairs: 135086622, topmedEntries: 35116087, hg19Entries: 1936990, mappedInHrc: 1888356, hrcVsTopmedPct: 5.516, ideogram: '/assets/images/chromosomes/chr11.svg' },
-  { chromosome: '12', basePairs: 133275309, topmedEntries: 33594199, hg19Entries: 1848117, mappedInHrc: 1812160, hrcVsTopmedPct: 5.5013, ideogram: '/assets/images/chromosomes/chr12.svg' },
-  { chromosome: '13', basePairs: 114364328, topmedEntries: 25226068, hg19Entries: 1385433, mappedInHrc: 1359178, hrcVsTopmedPct: 5.4921, ideogram: '/assets/images/chromosomes/chr13.svg' },
-  { chromosome: '14', basePairs: 107043718, topmedEntries: 22267236, hg19Entries: 1270436, mappedInHrc: 1242797, hrcVsTopmedPct: 5.7054, ideogram: '/assets/images/chromosomes/chr14.svg' },
-  { chromosome: '15', basePairs: 101991189, topmedEntries: 20974445, hg19Entries: 1139215, mappedInHrc: 1109442, hrcVsTopmedPct: 5.4314, ideogram: '/assets/images/chromosomes/chr15.svg' },
-  { chromosome: '16', basePairs: 90338345, topmedEntries: 23665360, hg19Entries: 1281297, mappedInHrc: 1251867, hrcVsTopmedPct: 5.4142, ideogram: '/assets/images/chromosomes/chr16.svg' },
-  { chromosome: '17', basePairs: 83257441, topmedEntries: 20260822, hg19Entries: 1090072, mappedInHrc: 1068295, hrcVsTopmedPct: 5.3802, ideogram: '/assets/images/chromosomes/chr17.svg' },
-  { chromosome: '18', basePairs: 80373285, topmedEntries: 20199166, hg19Entries: 1104755, mappedInHrc: 1083368, hrcVsTopmedPct: 5.4693, ideogram: '/assets/images/chromosomes/chr18.svg' },
-  { chromosome: '19', basePairs: 58617616, topmedEntries: 15126485, hg19Entries: 868554, mappedInHrc: 851073, hrcVsTopmedPct: 5.7419, ideogram: '/assets/images/chromosomes/chr19.svg' },
-  { chromosome: '20', basePairs: 64444167, topmedEntries: 16274345, hg19Entries: 884983, mappedInHrc: 868341, hrcVsTopmedPct: 5.4379, ideogram: '/assets/images/chromosomes/chr20.svg' },
-  { chromosome: '21', basePairs: 46709983, topmedEntries: 9663610, hg19Entries: 531276, mappedInHrc: 513077, hrcVsTopmedPct: 5.4977, ideogram: '/assets/images/chromosomes/chr21.svg' },
-  { chromosome: '22', basePairs: 50818468, topmedEntries: 10117751, hg19Entries: 524544, mappedInHrc: 510771, hrcVsTopmedPct: 5.1844, ideogram: '/assets/images/chromosomes/chr22.svg' },
-  { chromosome: 'X', basePairs: 156040895, topmedEntries: 29114100, hg19Entries: 1273927, mappedInHrc: 1259283, hrcVsTopmedPct: 4.3756, ideogram: '/assets/images/chromosomes/chrX.svg' }
+  { chromosome: '1', basePairs: 248956422, topmedEntries: 57577226, hg19Entries: 3069931, mappedInHrc: 2992535, notFoundInHrc: 51568979, notComparableToHg19: 3015712, hrcVsTopmedPct: 5.3318, ideogram: '/assets/images/chromosomes/chr1.svg' },
+  { chromosome: '2', basePairs: 242193529, topmedEntries: 61727855, hg19Entries: 3392237, mappedInHrc: 3320470, notFoundInHrc: 57065590, notComparableToHg19: 1341795, hrcVsTopmedPct: 5.4955, ideogram: '/assets/images/chromosomes/chr2.svg' },
+  { chromosome: '3', basePairs: 198295559, topmedEntries: 50368782, hg19Entries: 2821894, mappedInHrc: 2764965, notFoundInHrc: 46501213, notComparableToHg19: 1102604, hrcVsTopmedPct: 5.6025, ideogram: '/assets/images/chromosomes/chr3.svg' },
+  { chromosome: '4', basePairs: 190214555, topmedEntries: 48490718, hg19Entries: 2787581, mappedInHrc: 2731367, notFoundInHrc: 45244732, notComparableToHg19: 514619, hrcVsTopmedPct: 5.7487, ideogram: '/assets/images/chromosomes/chr4.svg' },
+  { chromosome: '5', basePairs: 181538259, topmedEntries: 45439747, hg19Entries: 2588168, mappedInHrc: 2536624, notFoundInHrc: 42286048, notComparableToHg19: 617075, hrcVsTopmedPct: 5.6958, ideogram: '/assets/images/chromosomes/chr5.svg' },
+  { chromosome: '6', basePairs: 170805979, topmedEntries: 42027327, hg19Entries: 2460111, mappedInHrc: 2405182, notFoundInHrc: 38991349, notComparableToHg19: 630796, hrcVsTopmedPct: 5.8536, ideogram: '/assets/images/chromosomes/chr6.svg' },
+  { chromosome: '7', basePairs: 159345973, topmedEntries: 40659953, hg19Entries: 2289305, mappedInHrc: 2235309, notFoundInHrc: 37514986, notComparableToHg19: 909658, hrcVsTopmedPct: 5.6304, ideogram: '/assets/images/chromosomes/chr7.svg' },
+  { chromosome: '8', basePairs: 145138636, topmedEntries: 39139389, hg19Entries: 2242705, mappedInHrc: 2195324, notFoundInHrc: 36698904, notComparableToHg19: 245161, hrcVsTopmedPct: 5.73, ideogram: '/assets/images/chromosomes/chr8.svg' },
+  { chromosome: '9', basePairs: 138394717, topmedEntries: 32559922, hg19Entries: 1686471, mappedInHrc: 1646301, notFoundInHrc: 28807585, notComparableToHg19: 2106036, hrcVsTopmedPct: 5.1796, ideogram: '/assets/images/chromosomes/chr9.svg' },
+  { chromosome: '10', basePairs: 133797422, topmedEntries: 34039169, hg19Entries: 1927503, mappedInHrc: 1876436, notFoundInHrc: 30712108, notComparableToHg19: 1450625, hrcVsTopmedPct: 5.6626, ideogram: '/assets/images/chromosomes/chr10.svg' },
+  { chromosome: '11', basePairs: 135086622, topmedEntries: 35116087, hg19Entries: 1936990, mappedInHrc: 1888356, notFoundInHrc: 31591863, notComparableToHg19: 1635868, hrcVsTopmedPct: 5.516, ideogram: '/assets/images/chromosomes/chr11.svg' },
+  { chromosome: '12', basePairs: 133275309, topmedEntries: 33594199, hg19Entries: 1848117, mappedInHrc: 1812160, notFoundInHrc: 30499633, notComparableToHg19: 1282406, hrcVsTopmedPct: 5.5013, ideogram: '/assets/images/chromosomes/chr12.svg' },
+  { chromosome: '13', basePairs: 114364328, topmedEntries: 25226068, hg19Entries: 1385433, mappedInHrc: 1359178, notFoundInHrc: 22484834, notComparableToHg19: 1382056, hrcVsTopmedPct: 5.4921, ideogram: '/assets/images/chromosomes/chr13.svg' },
+  { chromosome: '14', basePairs: 107043718, topmedEntries: 22267236, hg19Entries: 1270436, mappedInHrc: 1242797, notFoundInHrc: 20912450, notComparableToHg19: 111989, hrcVsTopmedPct: 5.7054, ideogram: '/assets/images/chromosomes/chr14.svg' },
+  { chromosome: '15', basePairs: 101991189, topmedEntries: 20974445, hg19Entries: 1139215, mappedInHrc: 1109442, notFoundInHrc: 19351151, notComparableToHg19: 513852, hrcVsTopmedPct: 5.4314, ideogram: '/assets/images/chromosomes/chr15.svg' },
+  { chromosome: '16', basePairs: 90338345, topmedEntries: 23665360, hg19Entries: 1281297, mappedInHrc: 1251867, notFoundInHrc: 21749700, notComparableToHg19: 663793, hrcVsTopmedPct: 5.4142, ideogram: '/assets/images/chromosomes/chr16.svg' },
+  { chromosome: '17', basePairs: 83257441, topmedEntries: 20260822, hg19Entries: 1090072, mappedInHrc: 1068295, notFoundInHrc: 18487116, notComparableToHg19: 705411, hrcVsTopmedPct: 5.3802, ideogram: '/assets/images/chromosomes/chr17.svg' },
+  { chromosome: '18', basePairs: 80373285, topmedEntries: 20199166, hg19Entries: 1104755, mappedInHrc: 1083368, notFoundInHrc: 17634737, notComparableToHg19: 1481061, hrcVsTopmedPct: 5.4693, ideogram: '/assets/images/chromosomes/chr18.svg' },
+  { chromosome: '19', basePairs: 58617616, topmedEntries: 15126485, hg19Entries: 868554, mappedInHrc: 851073, notFoundInHrc: 14246062, notComparableToHg19: 29350, hrcVsTopmedPct: 5.7419, ideogram: '/assets/images/chromosomes/chr19.svg' },
+  { chromosome: '20', basePairs: 64444167, topmedEntries: 16274345, hg19Entries: 884983, mappedInHrc: 868341, notFoundInHrc: 14072529, notComparableToHg19: 1333475, hrcVsTopmedPct: 5.4379, ideogram: '/assets/images/chromosomes/chr20.svg' },
+  { chromosome: '21', basePairs: 46709983, topmedEntries: 9663610, hg19Entries: 531276, mappedInHrc: 513077, notFoundInHrc: 8478725, notComparableToHg19: 671808, hrcVsTopmedPct: 5.4977, ideogram: '/assets/images/chromosomes/chr21.svg' },
+  { chromosome: '22', basePairs: 50818468, topmedEntries: 10117751, hg19Entries: 524544, mappedInHrc: 510771, notFoundInHrc: 8813678, notComparableToHg19: 793302, hrcVsTopmedPct: 5.1844, ideogram: '/assets/images/chromosomes/chr22.svg' },
+  { chromosome: 'X', basePairs: 156040895, topmedEntries: 29114100, hg19Entries: 1273927, mappedInHrc: 1259283, notFoundInHrc: 27484340, notComparableToHg19: 370477, hrcVsTopmedPct: 4.3756, ideogram: '/assets/images/chromosomes/chrX.svg' }
 ];

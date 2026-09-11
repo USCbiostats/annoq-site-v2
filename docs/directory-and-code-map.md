@@ -31,8 +31,9 @@ two files in `metadata/`.
 850-band, public domain), the source for the chromosome ideograms and base-pair lengths on the
 Data > Statistics tab. Unrelated to the annotation-tree staging described below.
 
-`merge_hrc_topmed_stats.json` — per-chromosome TopMed and HRC entry counts, the other input to that
-same table.
+`merge_hrc_topmed_stats.json` — per-chromosome TopMed and HRC r1.1 counts, the other input to that
+same table. Generated upstream by annoq-data-builder's `wgsa_add/merge_hrc_topmed.py`; see
+[`metadata/README.md`](../metadata/README.md) for the field-by-field meaning.
 
 `annotation_tree.csv` — the hand-maintained source of truth for the AnnoQ annotation tree, plus its
 `README.md`. **Not used by the app at runtime**: the tree the UI renders is built from the api-v2

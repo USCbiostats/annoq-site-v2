@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { StatisticsTab } from './StatisticsTab';
 
@@ -47,5 +47,32 @@ describe('StatisticsTab', () => {
     expect(screen.getByText('% of HRC compared to TopMed')).toBeInTheDocument();
     const first = screen.getAllByRole('row')[1];
     expect(within(first).getByText('5.3318%')).toBeInTheDocument();
+  });
+
+  it('names the HRC release in both HRC column headers', () => {
+    render(<StatisticsTab />);
+    expect(screen.getByText('# of entries in HRC r1.1')).toBeInTheDocument();
+    expect(screen.getByText('# mapped in HRC r1.1')).toBeInTheDocument();
+    // The pre-rename headers must not survive anywhere.
+    expect(screen.queryByText('# of entries in HG19')).toBeNull();
+    expect(screen.queryByText('Mapped in HRC #')).toBeNull();
+  });
+
+  it('breaks the TopMed total into the three Mapped_in_HRC outcomes', () => {
+    render(<StatisticsTab />);
+    expect(screen.getByText('# not found in HRC r1.1')).toBeInTheDocument();
+    expect(screen.getByText('# not comparable to hg19')).toBeInTheDocument();
+    // chr1: 2,992,535 Y + 51,568,979 N + 3,015,712 '.' = 57,577,226 TopMed rows.
+    const first = screen.getAllByRole('row')[1];
+    expect(within(first).getByText('51,568,979')).toBeInTheDocument();
+    expect(within(first).getByText('3,015,712')).toBeInTheDocument();
+  });
+
+  it('explains the non-obvious count columns with a tooltip', async () => {
+    render(<StatisticsTab />);
+    fireEvent.mouseOver(screen.getByText('# not comparable to hg19'));
+    expect(
+      await screen.findByText(/hg19 reference allele disagrees with hg38/i)
+    ).toBeInTheDocument();
   });
 });

@@ -30,6 +30,17 @@ describe('chromosomeStats', () => {
     }
   });
 
+  it('partitions the TopMed rows across the three Mapped_in_HRC outcomes', () => {
+    // merge_hrc_topmed.py classifies every TopMed row as 'Y', 'N' or '.', so the
+    // three columns must add up to the TopMed total exactly. If they ever stop
+    // adding up, the upstream file changed meaning.
+    for (const row of chromosomeStats) {
+      expect(row.mappedInHrc + row.notFoundInHrc + row.notComparableToHg19).toBe(
+        row.topmedEntries
+      );
+    }
+  });
+
   it('points every row at its own ideogram asset', () => {
     for (const row of chromosomeStats) {
       expect(row.ideogram).toBe(`/assets/images/chromosomes/chr${row.chromosome}.svg`);

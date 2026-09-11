@@ -1075,3 +1075,24 @@ a:hover {
   max-height: 72vh;
   overflow: auto;
 }
+
+.data-statistics-header {
+  cursor: help;
+  border-bottom: 1px dotted #7d8ba1;
+}
+
+/* With eight columns the table scrolls sideways, and an unpinned first column
+   takes the chromosome — the only thing identifying the row — with it. */
+.data-statistics-table th:first-child,
+.data-statistics-table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: #fff;
+  border-right: 1px solid #c8d2e2;
+}
+
+.data-statistics-table th:first-child {
+  background: #d6ddea;
+  z-index: 2;
+}
