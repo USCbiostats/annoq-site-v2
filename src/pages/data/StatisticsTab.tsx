@@ -41,9 +41,9 @@ const COLUMNS: Array<{
   },
   {
     key: 'mappedInHrc',
-    label: '# mapped in HRC r1.1',
+    label: '# of HRC r1.1 mapped to TopMed',
     tooltip:
-      'TopMed variants whose hg19 chromosome, position, ref and alt match an HRC r1.1 SNP. These are the rows the "Search HRC data" option returns. The second line is this count as a share of the HRC r1.1 column, i.e. how much of HRC r1.1 carried over into TopMed.',
+      'How much of HRC r1.1 carried over into TopMed. Counted on the TopMed side: variants whose hg19 chromosome, position, ref and alt match an HRC r1.1 SNP (Mapped_in_HRC = Y). These are the rows the "Search HRC data" option returns. The second line is this count as a share of the HRC r1.1 column.',
     secondary: (row) => `${((row.mappedInHrc / row.hg19Entries) * 100).toFixed(1)}% of HRC`
   },
   {

@@ -53,7 +53,7 @@ describe('StatisticsTab', () => {
   it('names the HRC release in both HRC column headers', () => {
     render(<StatisticsTab />);
     expect(screen.getByText('# of entries in HRC r1.1')).toBeInTheDocument();
-    expect(screen.getByText('# mapped in HRC r1.1')).toBeInTheDocument();
+    expect(screen.getByText('# of HRC r1.1 mapped to TopMed')).toBeInTheDocument();
     // The pre-rename headers must not survive anywhere.
     expect(screen.queryByText('# of entries in HG19')).toBeNull();
     expect(screen.queryByText('Mapped in HRC #')).toBeNull();
