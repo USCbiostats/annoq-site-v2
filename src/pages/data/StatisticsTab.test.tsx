@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { StatisticsTab } from './StatisticsTab';
+import { chromosomeStats } from '../../data/chromosomeStats';
 
 describe('StatisticsTab', () => {
   it('renders one row per chromosome, 1-22 then X', () => {
@@ -66,6 +67,24 @@ describe('StatisticsTab', () => {
     const first = screen.getAllByRole('row')[1];
     expect(within(first).getByText('51,568,979')).toBeInTheDocument();
     expect(within(first).getByText('3,015,712')).toBeInTheDocument();
+  });
+
+  it('shows the mapping rate under the mapped count, without a new column', () => {
+    render(<StatisticsTab />);
+    // chr1: 2,992,535 of 3,069,931 HRC r1.1 SNPs mapped = 97.5%.
+    const first = screen.getAllByRole('row')[1];
+    expect(within(first).getByText('97.5% of HRC')).toBeInTheDocument();
+    // Still eight columns -- the rate rides along inside the mapped cell.
+    expect(within(first).getAllByRole('cell')).toHaveLength(8);
+  });
+
+  it('derives the mapping rate from the two neighbouring columns', () => {
+    render(<StatisticsTab />);
+    const rows = screen.getAllByRole('row').slice(1);
+    chromosomeStats.forEach((stat, index) => {
+      const expected = `${((stat.mappedInHrc / stat.hg19Entries) * 100).toFixed(1)}% of HRC`;
+      expect(within(rows[index]).getByText(expected)).toBeInTheDocument();
+    });
   });
 
   it('explains the non-obvious count columns with a tooltip', async () => {

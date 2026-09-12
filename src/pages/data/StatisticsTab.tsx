@@ -20,6 +20,8 @@ const COLUMNS: Array<{
   key: keyof ChromosomeStat;
   label: string;
   tooltip: string;
+  /** Optional second line under the count, for a figure derived from other columns. */
+  secondary?: (row: ChromosomeStat) => string;
 }> = [
   {
     key: 'basePairs',
@@ -41,7 +43,8 @@ const COLUMNS: Array<{
     key: 'mappedInHrc',
     label: '# mapped in HRC r1.1',
     tooltip:
-      'TopMed variants whose hg19 chromosome, position, ref and alt match an HRC r1.1 SNP. These are the rows the "Search HRC data" option returns.'
+      'TopMed variants whose hg19 chromosome, position, ref and alt match an HRC r1.1 SNP. These are the rows the "Search HRC data" option returns. The second line is this count as a share of the HRC r1.1 column, i.e. how much of HRC r1.1 carried over into TopMed.',
+    secondary: (row) => `${((row.mappedInHrc / row.hg19Entries) * 100).toFixed(1)}% of HRC`
   },
   {
     key: 'notFoundInHrc',
@@ -102,6 +105,9 @@ export function StatisticsTab() {
                 {COLUMNS.map((column) => (
                   <TableCell key={column.key} align="right">
                     {count.format(row[column.key] as number)}
+                    {column.secondary && (
+                      <span className="data-statistics-share">{column.secondary(row)}</span>
+                    )}
                   </TableCell>
                 ))}
                 <TableCell align="right">{`${row.hrcVsTopmedPct}%`}</TableCell>
