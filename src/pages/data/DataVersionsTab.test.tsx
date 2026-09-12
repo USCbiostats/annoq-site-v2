@@ -44,9 +44,16 @@ describe('DataVersionsTab', () => {
     ).toBeInTheDocument();
   });
 
-  it('says not all HRC data was mapped', () => {
+  it('says not all HRC data can be mapped', () => {
     renderTab();
-    expect(screen.getByText(/not all of the HRC data was mapped to TopMed/i)).toBeInTheDocument();
+    expect(screen.getByText(/Not all of the HRC data can be mapped to TopMed/i)).toBeInTheDocument();
+  });
+
+  it('explains why a TopMed SNP can be matched to an HRC SNP at all', () => {
+    renderTab();
+    expect(
+      screen.getByText(/current TopMed SNP data includes\s+hg19 mapping information/i)
+    ).toBeInTheDocument();
   });
 
   it('renders the annotation version table moved off Supported Annotations', () => {

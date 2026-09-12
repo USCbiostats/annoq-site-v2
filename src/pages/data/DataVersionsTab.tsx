@@ -15,7 +15,9 @@ export function DataVersionsTab() {
         (HRC). The last version with HRC variants can be accessed via{' '}
         <Link href={ARCHIVE_URL} target="_blank" rel="noreferrer">archive.annoq.org</Link>. To
         support users who want to continue using HRC and access TopMed's richer annotations,
-        functionality has been added to search for HRC data. Note, not all of the HRC data was
+        functionality has been added to search for HRC data. The current TopMed SNP data includes
+        hg19 mapping information. Since, HRC is a subset of hg19, it is possible to determine if a
+        given SNP in TopMed is referring to the same SNP in HRC. Not all of the HRC data can be
         mapped to TopMed. Refer to{' '}
         <Link component={RouterLink} to="/data/statistics">Statistics</Link> for detailed chromosome
         specific TOPMed and HRC information.
