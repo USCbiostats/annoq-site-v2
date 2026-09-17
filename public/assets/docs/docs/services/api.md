@@ -1,4 +1,4 @@
-# Programmatic Access to AnnoQ
+# REST API Access to AnnoQ
 
 > This page documents how to query AnnoQ using the API
 
@@ -61,8 +61,9 @@ r1.1 panel (`Mapped_in_HRC=Y`), and the coordinate basis becomes **hg19**: chrom
 matched against `pos_hg19`, gene regions resolve to hg19, and VCF-style ids are matched against
 `HRC_chr_pos_ref_alt`. RSID search is unaffected. The response shape does not change — to see the hg19
 values, request the `Mapped_in_HRC`, `HRC_chr_pos`, `HRC_chr_pos_ref_alt`, `chr_hg19`, `pos_hg19`,
-`ref_hg19` and `alt_hg19` attributes, which live under the **HG19 Info** category. The parameter is not
-accepted by the keyword end-points.
+`ref_hg19` and `alt_hg19` attributes, which live under the **HG19 Info** category. The only end-point
+that does not accept it is `/snpAttributes`, which lists the annotation catalogue rather than
+returning SNPs.
 
 ## Software packages for programmatic access
 The following software packages are built using the API.  These libraries can be included in workflows to retrieve information from AnnoQ.  

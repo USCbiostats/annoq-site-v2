@@ -7,7 +7,7 @@ import remarkGfm from 'remark-gfm';
 
 const sections = [
   { title: 'Getting Started', path: '/docs', links: [{ title: 'Browser Compatibility', path: '/docs/getting_started/browser_compatibility' }] },
-  { title: 'Services', path: '/docs/services', links: [{ title: 'Programmatic Access to AnnoQ', path: '/docs/services/api' }] },
+  { title: 'Services', path: '/docs/services', links: [{ title: 'REST API Access to AnnoQ', path: '/docs/services/api' }] },
   {
     title: 'Tutorials',
     path: '/docs/tutorials',

@@ -92,3 +92,25 @@ describe('busy bar is pinned under the measured AppBar', () => {
     expect(Number(zIndex)).toBeLessThan(1300);
   });
 });
+
+// Issue #22 removed the "TOPMED BETA RELEASE" button from the menu bar. The
+// amber app bar and the .beta-label rule existed only to support it: the colour
+// was the beta signal and the button was its explanation. Left behind, the site
+// still looks like a beta with nothing saying so, and the comment pointed at a
+// label that no longer exists.
+describe('no orphaned TOPMed beta styling (issue #22)', () => {
+  it('restores the app bar to the neutral surface colour', () => {
+    const rule = declarationsFor('.main-appbar');
+    expect(rule).not.toMatch(/#fff3cd/i);
+    expect(rule).toMatch(/background:\s*rgba\(255, 255, 255, 0\.98\)/);
+  });
+
+  it('drops the .beta-label rule, which nothing renders any more', () => {
+    expect(rules.some((rule) => rule.selectors.includes('.beta-label'))).toBe(false);
+  });
+
+  // Catches the stale comment too, which declarationsFor strips before matching.
+  it('leaves no reference to the beta anywhere in the stylesheet', () => {
+    expect(css).not.toMatch(/beta/i);
+  });
+});

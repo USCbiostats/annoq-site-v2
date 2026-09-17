@@ -17,7 +17,7 @@ export function DataVersionsTab() {
         support users who want to continue using HRC and access TopMed's richer annotations,
         functionality has been added to search for HRC data. The current TopMed SNP data includes
         hg19 mapping information. Since HRC is a subset of hg19, it is possible to determine if a
-        given SNP in TopMed is referring to the same SNP in HRC. Not all of the HRC data can be
+        given SNP in TopMed is referring to the same SNP in HRC. Information such as if a SNP is Mapped to HRC and its chromosome and position can be found under the "HG19 Info" category. Not all of the HRC data can be
         mapped to TopMed. Refer to{' '}
         <Link component={RouterLink} to="/data/statistics">Statistics</Link> for detailed chromosome
         specific TOPMed and HRC information.
