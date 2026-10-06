@@ -37,7 +37,7 @@ const COLUMNS: Array<{
     key: 'hg19Entries',
     label: '# of entries in HRC r1.1',
     tooltip:
-      'Biallelic SNP rows in the HRC r1.1 reference (hg19/GRCh37), the set each TopMed variant is looked up in.'
+      'Total variant rows in the HRC r1.1 reference (hg19/GRCh37), the set each TopMed variant is looked up in.'
   },
   {
     key: 'mappedInHrc',

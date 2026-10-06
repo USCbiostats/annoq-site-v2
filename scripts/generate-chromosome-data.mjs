@@ -166,7 +166,7 @@ export type ChromosomeStat = {
   /** Variant rows in TopMed (hg38). */
   topmedEntries: number;
   /**
-   * Biallelic SNP rows in the raw HRC r1.1 reference VCF (hg19/GRCh37) — the key set
+   * Total variant rows in the HRC r1.1 reference (hg19/GRCh37) — the key set
    * merge_hrc_topmed.py looks each TopMed variant up in.
    */
   hg19Entries: number;

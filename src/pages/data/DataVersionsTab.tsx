@@ -12,10 +12,10 @@ export function DataVersionsTab() {
     <Box className="data-tab-body">
       <Typography className="data-prose" gutterBottom>
         Previous versions of AnnoQ were based on variants from the Haplotype Reference Consortium
-        (HRC). The last version with HRC variants can be accessed via{' '}
-        <Link href={ARCHIVE_URL} target="_blank" rel="noreferrer">archive.annoq.org</Link>. To
+        (HRC) which is based on Human Genome assembly GRCh37/hg19. The last version with HRC variants can be accessed via{' '}
+        <Link href={ARCHIVE_URL} target="_blank" rel="noreferrer">archive.annoq.org</Link>. The current version of AnnoQ has variants from {' '}<Link href={ARCHIVE_URL} target="_blank" rel="noreferrer">TopMed data freeze 8</Link>, which is based on GRCh38/hg38.  To
         support users who want to continue using HRC and access TopMed's richer annotations,
-        functionality has been added to search for HRC data. The current TopMed SNP data includes
+        functionality has been added to query only for HRC data. The current TopMed SNP data includes
         hg19 mapping information. Since HRC is a subset of hg19, it is possible to determine if a
         given SNP in TopMed is referring to the same SNP in HRC. Information such as if a SNP is Mapped to HRC and its chromosome and position can be found under the "HG19 Info" category. Not all of the HRC data can be
         mapped to TopMed. Refer to{' '}
