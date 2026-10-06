@@ -9,12 +9,13 @@ Collection of metadata files used by the AnnoQ website.
 >
 > **Until [annoq-site#78](https://github.com/USCbiostats/annoq-site/issues/78) merges to
 > `master`, `annoq-site/metadata/annotation_tree.csv` remains authoritative** — edit it there, not
-> here. The copy in this directory is `annoq-site`'s **`master`** version (558 rows) and is
-> deliberately behind the `issue-78-add-hrc-mapping-info` version (840 rows), which adds the HRC
-> mapping columns (`chr_pos`, `Mapped_in_HRC`, `HRC_chr_pos`, `HRC_chr_pos_ref_alt`).
+> here. The copy in this directory mirrors `annoq-site`'s **`issue-78-add-hrc-mapping-info`**
+> version (840 lines), which adds the HRC mapping columns (`chr_pos`, `Mapped_in_HRC`,
+> `HRC_chr_pos`, `HRC_chr_pos_ref_alt`) on top of `master` (558 lines). Any edit made there must be
+> copied here so the two stay byte-identical.
 >
-> **Phase 2 (after #78 merges):** refresh this file from the merged `annoq-site` `master`, then
-> repoint the generator docs at this path. The exact edits are listed in
+> **Phase 2 (after #78 merges):** confirm this file still matches the merged `annoq-site` `master`,
+> then repoint the generator docs at this path. The exact edits are listed in
 > [annoq-proj](https://github.com/USCbiostats/annoq-proj) → `.claude/skills/annoq-data-build/SKILL.md`.
 >
 > This file is **not read by the app at runtime** — annoq-site-v2 builds its annotation tree from
