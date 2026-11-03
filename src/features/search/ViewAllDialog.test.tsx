@@ -28,6 +28,10 @@ const annotations: Annotation[] = [
 const store = buildAnnotationStore(annotations);
 
 vi.mock('../annotations/useAnnotations', () => ({ useAnnotations: () => ({ data: store }) }));
+// pos cells read the genome build for their UCSC link.
+vi.mock('../version/useApiVersion', () => ({
+  useApiVersion: () => ({ data: { genome_build: 'GRCh37/hg19' } })
+}));
 
 // Counts every formatCell call so the test can assert that opening the dialog does
 // not re-render the rest of the table.

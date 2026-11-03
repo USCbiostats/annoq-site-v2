@@ -3,6 +3,7 @@ import { Box, Button, Container, Grid, Link, Paper, Stack, Table, TableBody, Tab
 import { Link as RouterLink } from 'react-router-dom';
 import { browserVersions, releases } from '../data/staticContent';
 import { useAnnotations } from '../features/annotations/useAnnotations';
+import { useApiVersion } from '../features/version/useApiVersion';
 import { flattenAnnotationTree } from '../lib/annotations';
 import { ANNOQ_VERSION } from '../lib/version';
 
@@ -398,6 +399,13 @@ function DataTable({ columns, rows }: { columns: string[]; rows: string[][] }) {
 
 function VersionContent() {
   const annotations = useAnnotations();
+  const apiVersion = useApiVersion();
+  // From the api-v2 deployment the site points at, which knows its own index.
+  // Omitted, never defaulted, when api-v2 does not answer /version.
+  const buildRows = [
+    ['Genome Build', apiVersion.data?.genome_build],
+    ['dbSNP Release', apiVersion.data?.dbsnp_release]
+  ].filter((row): row is string[] => Boolean(row[1]));
   // Tree order, not response order: the Angular site listed these in the order the
   // annotation tree nests them, and the flat list from /annotations is ordered
   // differently, which silently reshuffled this table during the port.
@@ -405,11 +413,13 @@ function VersionContent() {
     .filter((annotation) => annotation.version && annotation.name)
     .map((annotation) => [annotation.label || annotation.name, annotation.version || '']);
   return <SimplePage title="Data Source and Annotation Tool Version Summary">
-    <Typography color="text.secondary">Built using <Link href="https://sites.google.com/site/jpopgen/wgsa">WGSA</Link> version 095</Typography>
+    {apiVersion.data?.wgsa_version && (
+      <Typography color="text.secondary">Built using <Link href="https://sites.google.com/site/jpopgen/wgsa">WGSA</Link> version {apiVersion.data.wgsa_version}</Typography>
+    )}
     {annotations.isLoading ? (
       <Typography>Loading version information...</Typography>
     ) : (
-      <DataTable columns={['SNP Detail/Annotation Tool', 'Version']} rows={rows} />
+      <DataTable columns={['SNP Detail/Annotation Tool', 'Version']} rows={[...buildRows, ...rows]} />
     )}
   </SimplePage>;
 }
