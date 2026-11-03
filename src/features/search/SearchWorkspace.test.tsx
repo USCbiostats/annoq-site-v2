@@ -38,6 +38,7 @@ const fetchAnnotations = vi.fn();
 
 vi.mock('../../lib/api', () => ({
   fetchAnnotations: (signal?: AbortSignal) => fetchAnnotations(signal),
+  fetchApiVersion: vi.fn(() => Promise.resolve({})),
   graphqlRequest: vi.fn(() => Promise.reject(new Error('not expected in this test')))
 }));
 

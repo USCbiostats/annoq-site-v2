@@ -1,5 +1,5 @@
 import { API_BASE, GRAPHQL_URL } from './config';
-import type { Annotation } from '../types';
+import type { Annotation, ApiVersionInfo } from '../types';
 
 export async function fetchAnnotations(signal?: AbortSignal): Promise<Annotation[]> {
   const response = await fetch(`${API_BASE}/annotations`, { signal });
@@ -8,6 +8,14 @@ export async function fetchAnnotations(signal?: AbortSignal): Promise<Annotation
   }
   const payload = (await response.json()) as { results?: Annotation[] };
   return payload.results ?? [];
+}
+
+export async function fetchApiVersion(signal?: AbortSignal): Promise<ApiVersionInfo> {
+  const response = await fetch(`${API_BASE}/version`, { signal });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch API version (${response.status})`);
+  }
+  return (await response.json()) as ApiVersionInfo;
 }
 
 export async function graphqlRequest<TData>(

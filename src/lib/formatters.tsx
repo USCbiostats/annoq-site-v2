@@ -4,7 +4,9 @@ import pantherTerms from '../data/panther_terms.json';
 import { labelFor } from './annotations';
 import type { AnnotationStore } from '../types';
 import { ColumnValueType } from '../types';
-import { GENES_DISPLAYED_SIZE, TERMS_DISPLAYED_SIZE, UCSC_URL } from './config';
+import { GENES_DISPLAYED_SIZE, TERMS_DISPLAYED_SIZE } from './config';
+import { ucscAssembly, ucscPositionUrl } from './ucsc';
+import { useApiVersion } from '../features/version/useApiVersion';
 
 type PantherTerm = { id?: string; label?: string };
 const terms = pantherTerms as Record<string, PantherTerm>;
@@ -21,6 +23,24 @@ export type FormattedCell = {
   plain: string;
 };
 
+/**
+ * A component, not a plain link, so it can read the genome build from api-v2's
+ * /version without every formatCell caller passing it in. Plain text, not a
+ * link, until the build is known: a link to the wrong assembly opens the wrong
+ * place in the genome and UCSC gives no error.
+ */
+function UcscPositionLink({ chr, pos }: { chr: string; pos: string }) {
+  const assembly = ucscAssembly(useApiVersion().data?.genome_build);
+  if (!assembly) {
+    return <>{pos}</>;
+  }
+  return (
+    <Link href={ucscPositionUrl(assembly, chr, pos)} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
+      {pos}
+    </Link>
+  );
+}
+
 export function formatCell(
   field: string,
   value: unknown,
@@ -35,14 +55,7 @@ export function formatCell(
   if (field === 'pos') {
     const chr = String(row.chr ?? '').replace(/^chr/i, '');
     const pos = String(value);
-    return {
-      plain: pos,
-      node: (
-        <Link href={`${UCSC_URL}${chr}:${pos}-${pos}`} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
-          {pos}
-        </Link>
-      )
-    };
+    return { plain: pos, node: <UcscPositionLink chr={chr} pos={pos} /> };
   }
 
   const detail = store.byName[field];

@@ -7,8 +7,11 @@ export const environment = {
   genesDisplayedSize: Number(import.meta.env.VITE_ANNOQ_GENES_DISPLAYED_SIZE ?? 5),
   amigoTermUrl: import.meta.env.VITE_ANNOQ_AMIGO_TERM_URL ?? 'http://amigo.geneontology.org/amigo/term/',
   pubmedUrl: import.meta.env.VITE_ANNOQ_PUBMED_URL ?? 'https://www.ncbi.nlm.nih.gov/pubmed/',
+  // UCSC browser base, without `db` or `position`: the assembly (`db`) comes
+  // from the genome build api-v2's /version reports, and `position` from the row
+  // (see src/lib/ucsc.ts).
   ucscUrl:
     import.meta.env.VITE_ANNOQ_UCSC_URL ??
-    'https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&lastVirtModeType=default&lastVirtModeExtraState=&virtModeType=default&virtMode=0&nonVirtPosition=&position=chr',
+    'https://genome.ucsc.edu/cgi-bin/hgTracks?lastVirtModeType=default&lastVirtModeExtraState=&virtModeType=default&virtMode=0&nonVirtPosition=',
   googleAnalyticsId: import.meta.env.VITE_ANNOQ_GA_ID ?? 'G-ZRDY68GK00'
 };

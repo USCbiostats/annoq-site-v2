@@ -19,11 +19,14 @@ import { useMemo, useRef, useState } from 'react';
 import { AnnotationTree } from '../features/annotations/AnnotationTree';
 import { useAnnotationSelection } from '../features/annotations/AnnotationSelectionProvider';
 import { useAnnotations } from '../features/annotations/useAnnotations';
+import { useApiVersion } from '../features/version/useApiVersion';
 import { trackEvent } from '../lib/analytics';
 import { downloadText, parseConfig } from '../lib/files';
 
 export function SupportedAnnotationsPage() {
   const annotations = useAnnotations();
+  // From api-v2's /version: the WGSA build of the index this site queries.
+  const wgsaVersion = useApiVersion().data?.wgsa_version;
   const { selected, setSelected } = useAnnotationSelection();
   const [error, setError] = useState('');
   const [tab, setTab] = useState('annotations');
@@ -86,9 +89,11 @@ export function SupportedAnnotationsPage() {
           </>
           ) : (
             <Box className="supported-version-table">
-              <Typography variant="subtitle2" sx={{ p: 1 }}>
-                Built using <a href="https://sites.google.com/site/jpopgen/wgsa" target="_blank" rel="noreferrer">WGSA</a> version 095
-              </Typography>
+              {wgsaVersion && (
+                <Typography variant="subtitle2" sx={{ p: 1 }}>
+                  Built using <a href="https://sites.google.com/site/jpopgen/wgsa" target="_blank" rel="noreferrer">WGSA</a> version {wgsaVersion}
+                </Typography>
+              )}
               <Table className="annoq-table">
                 <TableHead>
                   <TableRow>
