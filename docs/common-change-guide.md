@@ -82,6 +82,35 @@ Add an entry to `releases`.
 
 Release item strings may include curated HTML links.
 
+## Bump The AnnoQ Version
+
+The current version is defined once, in:
+
+```text
+src/lib/version.ts
+```
+
+Change `ANNOQ_VERSION` and `ANNOQ_RELEASE_DATE` (ISO `YYYY-MM-DD`) there. These
+read from it — do not hardcode the version anywhere else:
+
+- the home-page banner ("AnnoQ Version X Released");
+- the `<meta name="version">` tag in `index.html` (filled in from
+  `%ANNOQ_VERSION%` by `vite.config.ts`);
+- `GET /version.json`, e.g. `https://annoq.org/version.json`:
+
+  ```json
+  { "version": "1.3.1", "releaseDate": "2026-09-04" }
+  ```
+
+  `vite.config.ts` writes it into `dist/` on build and serves it from the dev
+  server. Not to be confused with the `/version` page, which lists data-source
+  and annotation-tool versions.
+
+Also add a `releases` entry with the same `version`, dated the same day in the
+release-notes style ("September 4, 2026") (see above); a test fails if they
+disagree. `package.json`'s `version` is the npm
+package version, not the AnnoQ version, and is left alone.
+
 ## Add Or Change Docs Pages
 
 Markdown content:
@@ -307,6 +336,8 @@ PANTHER term lookup data:
 ```text
 src/data/panther_terms.json
 ```
+
+Generated upstream by **annoq-data-builder** (the Java module `add_panther_enhancer`, which writes it to its working/diagnostics dir) and copied in — **do not hand-edit it**. See annoq-proj `docs/pipeline.md` → "Generated artifacts".
 
 ## Change Filters
 

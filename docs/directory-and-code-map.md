@@ -166,6 +166,7 @@ Static app data.
 
 - `panther_terms.json`
   Large local lookup map used by cell formatting for term IDs.
+  Generated upstream by **annoq-data-builder** (the Java module `add_panther_enhancer`, which writes it to its working/diagnostics dir) and copied in — **do not hand-edit it**. See annoq-proj `docs/pipeline.md` → "Generated artifacts".
 
 ## `src/pages/`
 
@@ -236,6 +237,11 @@ Reusable logic and backend helpers.
 
 - `config.ts`
   Runtime constants derived from environment.
+
+- `version.ts`
+  `ANNOQ_VERSION` and `ANNOQ_RELEASE_DATE`, the current AnnoQ release. Single
+  source for the home-page banner, the `index.html` version meta tag, and
+  `/version.json` (the last two produced by `vite.config.ts`).
 
 - `annotations.ts`
   Builds the normalized annotation store and tree.
