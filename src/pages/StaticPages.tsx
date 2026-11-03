@@ -3,12 +3,14 @@ import { Box, Button, Container, Grid, Link, Paper, Stack, Table, TableBody, Tab
 import { Link as RouterLink } from 'react-router-dom';
 import { browserVersions, releases } from '../data/staticContent';
 import { useAnnotations } from '../features/annotations/useAnnotations';
+import { flattenAnnotationTree } from '../lib/annotations';
+import { ANNOQ_VERSION } from '../lib/version';
 
 export function HomePage() {
   return (
     <Box>
       <Box className="free-banner">
-        <Button component={RouterLink} to="/release">AnnoQ Version 1.3.1 Released</Button>
+        <Button component={RouterLink} to="/release">AnnoQ Version {ANNOQ_VERSION} Released</Button>
       </Box>
       <Box className="hero">
         <Container className="hero-inner">
@@ -396,7 +398,10 @@ function DataTable({ columns, rows }: { columns: string[]; rows: string[][] }) {
 
 function VersionContent() {
   const annotations = useAnnotations();
-  const rows = (annotations.data?.annotations ?? [])
+  // Tree order, not response order: the Angular site listed these in the order the
+  // annotation tree nests them, and the flat list from /annotations is ordered
+  // differently, which silently reshuffled this table during the port.
+  const rows = flattenAnnotationTree(annotations.data?.tree ?? [])
     .filter((annotation) => annotation.version && annotation.name)
     .map((annotation) => [annotation.label || annotation.name, annotation.version || '']);
   return <SimplePage title="Data Source and Annotation Tool Version Summary">
