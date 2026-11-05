@@ -34,7 +34,7 @@ export type ReleaseInfo = {
 
 export const releases: ReleaseInfo[] = [
   {
-    date: 'November 03, 2026',
+    date: 'November 3, 2026',
     title: 'Versioning',
     version: '1.3.11',
     description: [{ heading: 'Software Update', items: ['The web client has been updated to use versioning information from the API'] }]
