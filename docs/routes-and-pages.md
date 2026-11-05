@@ -16,6 +16,7 @@ Routes are defined in `src/App.tsx`.
 | `/contact` | `ContactPage` | Contact email. |
 | `/cookie-policy` | `CookiePolicyPage` | Cookie and analytics policy. |
 | `/version` | `VersionPage` | Data source and annotation tool version summary. |
+| `/version.json` | none (static file) | Current AnnoQ version and release date as JSON, from `src/lib/version.ts`. |
 | `/docs` | `DocsPage` | Docs markdown index. |
 | `/docs/:section` | `DocsPage` | Docs section index. |
 | `/docs/:section/:page` | `DocsPage` | Docs leaf page. |

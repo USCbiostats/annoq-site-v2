@@ -17,6 +17,10 @@ const store = buildAnnotationStore([
 vi.mock('../annotations/useAnnotations', () => ({
   useAnnotations: () => ({ data: store })
 }));
+// pos cells read the genome build for their UCSC link.
+vi.mock('../version/useApiVersion', () => ({
+  useApiVersion: () => ({ data: { genome_build: 'GRCh37/hg19' } })
+}));
 
 const request: QueryRequest = {
   mode: 'chromosome',

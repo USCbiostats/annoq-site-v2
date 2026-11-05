@@ -21,6 +21,9 @@ const store = buildAnnotationStore([
 vi.mock('../features/annotations/useAnnotations', () => ({
   useAnnotations: () => ({ data: store, isLoading: false, error: null })
 }));
+vi.mock('../features/version/useApiVersion', () => ({
+  useApiVersion: () => ({ data: undefined })
+}));
 
 const gtag = vi.fn();
 

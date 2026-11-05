@@ -33,7 +33,19 @@ export type ReleaseInfo = {
 };
 
 export const releases: ReleaseInfo[] = [
-   {
+  {
+    date: 'November 4, 2026',
+    title: 'Versioning',
+    version: '2.0-beta.11',
+    description: [{ heading: 'Software Update for TopMed data', items: ['The web client for <a href="https://topmed.annoq.org" target="_blank">TopMed</a> has been updated to use versioning information from the API'] }]
+  },
+  {
+    date: 'November 3, 2026',
+    title: 'Versioning',
+    version: '1.3.11',
+    description: [{ heading: 'Software Update', items: ['The web client has been updated to use versioning information from the API'] }]
+  },
+  {
     date: 'September 4, 2026',
     title: 'New Web Client',
     version: '1.3.1',

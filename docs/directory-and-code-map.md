@@ -266,6 +266,11 @@ Reusable logic and backend helpers.
 - `config.ts`
   Runtime constants derived from environment.
 
+- `version.ts`
+  `ANNOQ_VERSION` and `ANNOQ_RELEASE_DATE`, the current AnnoQ release. Single
+  source for the home-page banner, the `index.html` version meta tag, and
+  `/version.json` (the last two produced by `vite.config.ts`).
+
 - `annotations.ts`
   Builds the normalized annotation store and tree.
 

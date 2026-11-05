@@ -35,7 +35,7 @@ Relevant environment variables:
 | `VITE_ANNOQ_GENES_DISPLAYED_SIZE` | Number of gene-list values shown before overflow. |
 | `VITE_ANNOQ_AMIGO_TERM_URL` | AmiGO term link base. |
 | `VITE_ANNOQ_PUBMED_URL` | PubMed link base. |
-| `VITE_ANNOQ_UCSC_URL` | UCSC browser link base. |
+| `VITE_ANNOQ_UCSC_URL` | UCSC browser link base, without `db` or `position`. `src/lib/ucsc.ts` adds `db` (the assembly, e.g. `hg19`, from the genome build in api-v2's `/version`) and `position` (from the row). With no genome build from the API, positions are shown unlinked. |
 | `VITE_ANNOQ_GA_ID` | Google Analytics measurement id. |
 
 ## Schema Types (GraphQL Codegen)

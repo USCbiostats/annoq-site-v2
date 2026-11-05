@@ -26,8 +26,9 @@ import { useAnnotationSelection } from '../annotations/AnnotationSelectionProvid
 import { SAMPLE_RSID_LIST, SAMPLE_VCF } from '../../data/samples';
 import { downloadText, parseConfig } from '../../lib/files';
 import { trackEvent } from '../../lib/analytics';
-import { ENABLE_KEYWORD_SEARCH, GENOME_BUILD } from '../../lib/config';
+import { ENABLE_KEYWORD_SEARCH } from '../../lib/config';
 import { QUERY_MODES, queryModeLabel } from '../../lib/queryModes';
+import { useApiVersion } from '../version/useApiVersion';
 import { submitSearch } from './SearchWorkspace';
 
 /**
@@ -66,6 +67,9 @@ export function QueryDrawer({
 }) {
   const { state, dispatch } = useSearchState();
   const annotationSelection = useAnnotationSelection();
+  // v1 issue #88 hardcoded GRCh37/hg19, which is wrong on the TOPMed stack.
+  // api-v2's /version states the build of the index it serves.
+  const genomeBuild = useApiVersion().data?.genome_build;
   const [mode, setMode] = useState(state.mode);
   const [values, setValues] = useState(state.values);
   const [searchHRC, setSearchHRC] = useState(state.searchHRC);
@@ -138,7 +142,9 @@ export function QueryDrawer({
     <Box className="drawer-body">
       <Stack className="drawer-header query-drawer-title" direction="row" sx={{ alignItems: 'flex-end' }}>
         <Box>
-          <Typography variant="caption" className="query-genome-build">AnnoQ is based on {GENOME_BUILD}</Typography>
+          {genomeBuild && (
+            <Typography variant="caption" className="query-genome-build">AnnoQ is based on {genomeBuild}</Typography>
+          )}
           <Stack direction="row" spacing={1} sx={{ alignItems: 'baseline' }}>
             <Typography variant="subtitle2">Input Query:</Typography>
             <Typography variant="caption" className="muted">{queryModeLabel(mode)}</Typography>

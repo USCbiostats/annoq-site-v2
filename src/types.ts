@@ -29,6 +29,17 @@ export type Annotation = {
   keyword_searchable?: boolean;
 };
 
+// From api-v2's GET /version (annoq-api-v2 issue #80). Each api-v2 deployment
+// states the genome build and dbSNP release of the index it serves, so the site
+// reads them rather than hardcoding the HRC (GRCh37/hg19) values.
+export type ApiVersionInfo = {
+  api_version?: string;
+  data_version?: string;
+  genome_build?: string;
+  dbsnp_release?: string;
+  wgsa_version?: string;
+};
+
 export type AnnotationNode = Annotation & {
   children: AnnotationNode[];
 };

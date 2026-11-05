@@ -6,6 +6,12 @@ import { AnnotationSelectionProvider, useAnnotationSelection } from '../annotati
 import { QueryDrawer } from './QueryDrawer';
 import { SearchProvider } from './searchState';
 
+// What api-v2's /version answered; undefined is api-v2 not answering.
+const apiVersion = vi.hoisted(() => ({ data: undefined as { genome_build?: string } | undefined }));
+vi.mock('../version/useApiVersion', () => ({
+  useApiVersion: () => ({ data: apiVersion.data })
+}));
+
 const store = buildAnnotationStore([
   { id: '1', name: 'Basic Info', leaf: false },
   { id: '2', parent_id: '1', name: 'chr', leaf: true },
@@ -97,10 +103,21 @@ describe('QueryDrawer analytics', () => {
 });
 
 // v1 issue #88 put this in the Input Query heading, right after "(Selected: …)".
+// The build comes from api-v2's /version (annoq-api-v2 issue #80), not a constant.
 describe('QueryDrawer genome build', () => {
-  it('states the genome build the dataset is based on', () => {
+  afterEach(() => {
+    apiVersion.data = undefined;
+  });
+
+  it('states the genome build api-v2 reports for the dataset', () => {
+    apiVersion.data = { genome_build: 'GRCh38/hg38' };
     renderDrawer();
     expect(screen.getByText('AnnoQ is based on GRCh38/hg38')).toBeInTheDocument();
+  });
+
+  it('drops the caption, rather than guessing, when api-v2 does not report it', () => {
+    renderDrawer();
+    expect(screen.queryByText(/AnnoQ is based on/)).toBeNull();
   });
 });
 

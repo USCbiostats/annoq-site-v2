@@ -15,6 +15,10 @@ vi.mock('../../features/annotations/useAnnotations', async () => {
   ]);
   return { useAnnotations: () => ({ data: store, isLoading: false, error: null }) };
 });
+// The version table reads genome build / dbSNP / WGSA from api-v2's /version.
+vi.mock('../../features/version/useApiVersion', () => ({
+  useApiVersion: () => ({ data: { genome_build: 'GRCh38/hg38', dbsnp_release: '155', wgsa_version: '0.95' } })
+}));
 
 function renderTab() {
   render(<MemoryRouter><DataVersionsTab /></MemoryRouter>);

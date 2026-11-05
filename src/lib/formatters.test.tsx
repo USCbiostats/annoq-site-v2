@@ -1,9 +1,20 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { buildAnnotationStore } from './annotations';
 import { formatCell } from './formatters';
+import { ucscAssembly, ucscPositionUrl } from './ucsc';
 import { ColumnValueType } from '../types';
 import type { Annotation } from '../types';
+
+// What api-v2's /version answered; undefined is api-v2 not answering.
+const apiVersion = vi.hoisted(() => ({ data: undefined as { genome_build?: string } | undefined }));
+vi.mock('../features/version/useApiVersion', () => ({
+  useApiVersion: () => ({ data: apiVersion.data })
+}));
+
+afterEach(() => {
+  apiVersion.data = undefined;
+});
 
 // TERMS_DISPLAYED_SIZE is 8 under test, so 12 items overflow the cell.
 const ITEM_COUNT = 12;
@@ -65,5 +76,57 @@ describe('formatCell view-all contract', () => {
     const cell = formatCell('go_bp', short, { go_bp: short }, store);
     render(<div>{cell.node}</div>);
     expect(screen.queryByRole('button', { name: /View all/ })).not.toBeInTheDocument();
+  });
+});
+
+describe('ucscAssembly', () => {
+  it('takes the hgNN assembly from the genome build api-v2 reports', () => {
+    expect(ucscAssembly('GRCh37/hg19')).toBe('hg19');
+    expect(ucscAssembly('GRCh38/hg38')).toBe('hg38');
+  });
+
+  it('is undefined when there is no build or it names no hgNN assembly', () => {
+    expect(ucscAssembly(undefined)).toBeUndefined();
+    expect(ucscAssembly(null)).toBeUndefined();
+    expect(ucscAssembly('GRCh37')).toBeUndefined();
+  });
+});
+
+describe('ucscPositionUrl', () => {
+  it('opens UCSC on the given assembly at a single base', () => {
+    const url = new URL(ucscPositionUrl('hg19', '1', '12345'));
+    expect(url.origin + url.pathname).toBe('https://genome.ucsc.edu/cgi-bin/hgTracks');
+    expect(url.searchParams.getAll('db')).toEqual(['hg19']);
+    expect(url.searchParams.get('position')).toBe('chr1:12345-12345');
+  });
+});
+
+describe('formatCell pos UCSC link', () => {
+  function renderPos(row: Record<string, unknown>) {
+    render(<>{formatCell('pos', row.pos, row, store).node}</>);
+  }
+
+  function linkParams(name: string) {
+    return new URL(screen.getByRole('link', { name }).getAttribute('href') ?? '').searchParams;
+  }
+
+  it('links to UCSC on hg19 when api-v2 reports GRCh37/hg19 (HRC)', () => {
+    apiVersion.data = { genome_build: 'GRCh37/hg19' };
+    renderPos({ chr: '1', pos: 12345 });
+    expect(linkParams('12345').get('db')).toBe('hg19');
+    expect(linkParams('12345').get('position')).toBe('chr1:12345-12345');
+  });
+
+  it('links to UCSC on hg38 when api-v2 reports GRCh38/hg38 (TOPMed)', () => {
+    apiVersion.data = { genome_build: 'GRCh38/hg38' };
+    renderPos({ chr: 'chrX', pos: 678 });
+    expect(linkParams('678').get('db')).toBe('hg38');
+    expect(linkParams('678').get('position')).toBe('chrX:678-678');
+  });
+
+  it('shows the position unlinked, rather than guess the assembly, when api-v2 reports no build', () => {
+    renderPos({ chr: '1', pos: 12345 });
+    expect(screen.getByText('12345')).toBeInTheDocument();
+    expect(screen.queryByRole('link')).toBeNull();
   });
 });

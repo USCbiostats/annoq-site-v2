@@ -35,17 +35,3 @@ export const ENABLE_KEYWORD_SEARCH = false;
 export const TERMS_DISPLAYED_SIZE = environment.termsDisplayedSize;
 export const GENES_DISPLAYED_SIZE = environment.genesDisplayedSize;
 export const UCSC_URL = environment.ucscUrl;
-
-/**
- * v1 issue #88. Hardcoded, as v1 was.
- *
- * This branch serves TOPMed (Freeze 8), which is GRCh38/hg38 -- so the value is
- * now correct for TOPMed and wrong for HRC, the inverse of what it was before
- * the issue #78 port. The "Search HRC data" option does not change it: the HRC
- * r1.1 panel is a *mapping* of these variants, and the drawer says so with its
- * own hg19 hint rather than by rewriting this label.
- *
- * Isolated here so retargeting stays a one-line change.
- * See docs/superpowers/specs/2026-09-08-issue-78-hrc-mapping-port-design.md.
- */
-export const GENOME_BUILD = 'GRCh38/hg38';

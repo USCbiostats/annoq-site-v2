@@ -33,7 +33,8 @@ HomePage
 
 Major sections:
 
-- Release banner.
+- Release banner. Its version comes from `ANNOQ_VERSION` in
+  `src/lib/version.ts` (issue #23).
 - Hero with video.
 - Variant/annotation stat cards.
 - TOPMed section.

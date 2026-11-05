@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 import { API_DOCS_URL } from '../lib/config';
+import { releases } from '../data/staticContent';
+import { ANNOQ_RELEASE_DATE, ANNOQ_VERSION, formatReleaseDate } from '../lib/version';
 import { HomePage } from './StaticPages';
 
 // HomePage does not call useAnnotations, but StaticPages imports it for the
@@ -9,6 +11,18 @@ import { HomePage } from './StaticPages';
 vi.mock('../features/annotations/useAnnotations', () => ({
   useAnnotations: () => ({ data: undefined, isLoading: false, error: null })
 }));
+
+describe('current AnnoQ version (issue #23)', () => {
+  it('announces ANNOQ_VERSION in the home-page banner, linking to the release notes', () => {
+    render(<MemoryRouter><HomePage /></MemoryRouter>);
+    expect(screen.getByRole('link', { name: `AnnoQ Version ${ANNOQ_VERSION} Released` })).toHaveAttribute('href', '/release');
+  });
+
+  it('has release notes for ANNOQ_VERSION, dated ANNOQ_RELEASE_DATE, so the banner never points at a missing entry', () => {
+    const release = releases.find((entry) => entry.version === ANNOQ_VERSION);
+    expect(release?.date).toBe(formatReleaseDate(ANNOQ_RELEASE_DATE));
+  });
+});
 
 describe('HomePage web browser access section', () => {
   it('shows the query UI screenshot alongside the numbered steps', () => {

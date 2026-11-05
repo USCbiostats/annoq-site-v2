@@ -1,7 +1,8 @@
 import { Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { useMemo } from 'react';
 import { flattenTree } from '../../lib/annotations';
-import type { AnnotationNode } from '../../types';
+import { useApiVersion } from '../version/useApiVersion';
+import type { AnnotationNode, ApiVersionInfo } from '../../types';
 
 const WGSA_URL = 'https://sites.google.com/site/jpopgen/wgsa';
 
@@ -28,14 +29,35 @@ export function annotationVersionRows(tree: AnnotationNode[]): AnnotationVersion
     }));
 }
 
+/**
+ * Genome build and dbSNP release of the index the site queries, from api-v2's
+ * /version (annoq-api-v2 issue #80). Each api-v2 deployment states its own, so
+ * the TOPMed stack reports GRCh38/hg38 and 155 without anything hardcoded here.
+ * Omitted, never defaulted, when api-v2 does not report them.
+ */
+export function apiVersionRows(apiVersion: ApiVersionInfo | undefined): AnnotationVersionRow[] {
+  return [
+    { name: 'genome_build', label: 'Genome Build', version: apiVersion?.genome_build },
+    { name: 'dbsnp_release', label: 'dbSNP Release', version: apiVersion?.dbsnp_release }
+  ].filter((row): row is AnnotationVersionRow => Boolean(row.version));
+}
+
 export function AnnotationVersionTable({ tree }: { tree: AnnotationNode[] }) {
-  const rows = useMemo(() => annotationVersionRows(tree), [tree]);
+  const apiVersion = useApiVersion().data;
+  const rows = useMemo(
+    () => [...apiVersionRows(apiVersion), ...annotationVersionRows(tree)],
+    [apiVersion, tree]
+  );
+  // From api-v2's /version: the WGSA build of the index this site queries.
+  const wgsaVersion = apiVersion?.wgsa_version;
 
   return (
     <>
-      <Typography variant="subtitle2" sx={{ pt: 3, pb: 1, px: 1 }}>
-        Built using <a href={WGSA_URL} target="_blank" rel="noreferrer">WGSA</a> version 095
-      </Typography>
+      {wgsaVersion && (
+        <Typography variant="subtitle2" sx={{ pt: 3, pb: 1, px: 1 }}>
+          Built using <a href={WGSA_URL} target="_blank" rel="noreferrer">WGSA</a> version {wgsaVersion}
+        </Typography>
+      )}
       <Table className="annoq-table">
         <TableHead>
           <TableRow>

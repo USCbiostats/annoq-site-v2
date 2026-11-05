@@ -93,17 +93,29 @@ describe('busy bar is pinned under the measured AppBar', () => {
   });
 });
 
-// Issue #22 removed the "TOPMED BETA RELEASE" button from the menu bar. The
-// amber app bar and the .beta-label rule existed only to support it: the colour
-// was the beta signal and the button was its explanation. Left behind, the site
-// still looks like a beta with nothing saying so, and the comment pointed at a
-// label that no longer exists.
-describe('no orphaned TOPMed beta styling (issue #22)', () => {
-  it('restores the app bar to the neutral surface colour', () => {
+// The TOPMed site's menu bar is light yellow, as on the Angular site at
+// topmed.annoq.org (annoq-site issue-78-add-hrc-mapping-info,
+// toolbar.component.scss), to warn users that this is a different dataset from
+// the HRC site at annoq.org, whose bar stays white.
+describe('TOPMed dataset menu bar colour', () => {
+  it('colours the app bar light yellow, matching topmed.annoq.org', () => {
     const rule = declarationsFor('.main-appbar');
-    expect(rule).not.toMatch(/#fff3cd/i);
-    expect(rule).toMatch(/background:\s*rgba\(255, 255, 255, 0\.98\)/);
+    expect(rule).toMatch(/background:\s*#fff3cd\s*!important/i);
   });
+
+  // theme.ts gives every MUI Toolbar a white background, and the menu bar's
+  // Toolbar fills the whole AppBar -- so unless it is transparent it paints
+  // white over the yellow and only the 1px border shows.
+  it('keeps the menu bar Toolbar transparent so the yellow shows through', () => {
+    const rule = declarationsFor('.main-toolbar');
+    expect(rule).toMatch(/background-color:\s*transparent\s*!important/);
+  });
+});
+
+// Issue #22 removed the "TOPMED BETA RELEASE" button from the menu bar, and the
+// .beta-label rule that only it used. The yellow bar above is kept as the
+// dataset signal, not a beta signal, so nothing should mention a beta.
+describe('no orphaned TOPMed beta styling (issue #22)', () => {
 
   it('drops the .beta-label rule, which nothing renders any more', () => {
     expect(rules.some((rule) => rule.selectors.includes('.beta-label'))).toBe(false);

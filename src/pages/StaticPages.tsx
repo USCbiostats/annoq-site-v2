@@ -5,12 +5,13 @@ import { browserVersions, releases } from '../data/staticContent';
 import { API_DOCS_URL } from '../lib/config';
 import { useAnnotations } from '../features/annotations/useAnnotations';
 import { AnnotationVersionTable } from '../features/annotations/AnnotationVersionTable';
+import { ANNOQ_VERSION } from '../lib/version';
 
 export function HomePage() {
   return (
     <Box>
       <Box className="free-banner">
-        <Button component={RouterLink} to="/release">AnnoQ Version 1.3.1 Released</Button>
+        <Button component={RouterLink} to="/release">AnnoQ Version {ANNOQ_VERSION} Released</Button>
       </Box>
       <Box className="hero">
         <Container className="hero-inner">

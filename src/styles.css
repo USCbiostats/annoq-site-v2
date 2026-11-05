@@ -56,13 +56,21 @@ a:hover {
 
 .main-appbar {
   border-bottom: 1px solid #d5deea;
-  background: rgba(255, 255, 255, 0.98) !important;
+  /* Light yellow on the TOPMed site, so users can tell this dataset (TOPMed
+     Freeze 8, GRCh38/hg38) apart from the HRC site at annoq.org at a glance.
+     Same colour as the Angular site at topmed.annoq.org
+     (annoq-site issue-78-add-hrc-mapping-info, toolbar.component.scss).
+     The HRC site on main keeps rgba(255, 255, 255, 0.98). */
+  background: #fff3cd !important;
 }
 
 .main-toolbar {
   min-height: 60px !important;
   padding: 0 22px !important;
   gap: 18px;
+  /* theme.ts makes every Toolbar white; this one fills the AppBar, so it must
+     be transparent or it hides the .main-appbar colour above. */
+  background-color: transparent !important;
 }
 
 .brand {
