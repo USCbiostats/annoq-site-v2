@@ -17,9 +17,9 @@
  * Not `package.json`'s `version`, which is the npm package version of this
  * client and is not bumped with AnnoQ releases.
  */
-export const ANNOQ_VERSION = '1.3.11';
+export const ANNOQ_VERSION = '1.3.12';
 /** ISO 8601 (YYYY-MM-DD), so `/version.json` is machine-readable. */
-export const ANNOQ_RELEASE_DATE = '2026-11-03';
+export const ANNOQ_RELEASE_DATE = '2026-11-10';
 
 export const VERSION_INFO_PATH = '/version.json';
 
