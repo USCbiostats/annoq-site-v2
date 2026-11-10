@@ -34,6 +34,19 @@ export type ReleaseInfo = {
 
 export const releases: ReleaseInfo[] = [
   {
+    date: 'November 10, 2026',
+    title: 'PEREGRINE data update',
+    version: '1.3.12',
+    description: [{
+      heading: 'Data Updates',
+      items: [
+        'PEREGRINE enhancer-gene links updated 2026-11-05: 3,255 new enhancer-gene links were added for 3,110 existing PEREGRINE enhancers.',
+        'PEREGRINE enhancer linked genes, assays and the GO, PANTHER and Reactome annotations of the linked genes were updated for 20,344 variants. Existing enhancer-gene links were not changed.',
+        'This update applies to the HRC data (<a href="https://annoq.org" target="_blank">annoq.org</a>). <a href="https://topmed.annoq.org" target="_blank">TopMed</a> will be updated separately.'
+      ]
+    }]
+  },
+  {
     date: 'November 3, 2026',
     title: 'Versioning',
     version: '1.3.11',
